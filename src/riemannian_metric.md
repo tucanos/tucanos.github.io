@@ -55,7 +55,7 @@ and does not respect the maximum principle:
 
 ### Edge length in metric space
 
-In order to compute the length of an edge $\mathbf e_{i,j} = \mathbf x_j - \mathbf x_i$, logarithmic interpolation is considered along the edge leading to:
+In order to compute the length of an edge $\mathbf e_{i,j} = \mathbf x_j - \mathbf x_i$, logarithmic interpolation is considered along the edge. It can be shown that it is equivalent to a geometric interpolation of the physical length prescribed by the metric [F. Alauzet](https://www.ljll.fr/~frey/papers/meshing/Alauzet%20F.,%20Size%20gradation%20control%20of%20anisotropic%20meshes.pdf), leading to:
 $$  l_\mathcal M(e_{i,j}) = l_i \frac{a - 1} { a \ln(a)} $$ 
 with $l_k = \sqrt{e_{i,j}^T \mathcal M_k e_{i,j}}$ and $a = l_j / l_i$.
 
