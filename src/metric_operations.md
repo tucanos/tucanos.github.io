@@ -2,36 +2,149 @@
 
 Building a metric that is suitable for remeshing may require [combining information from different sources](#metric-intersection) or imposing constraints (e.g. [minimum or maximum edge lengths](#thresholds-on-the-local-sizes), [smooth variation](#controling-the-step-between-two-metrics) with respect to [the input mesh](#element-implied-metric), ... ), 
 
-## Metric intersection
+## Metric Interpolation
 
-Given two metrics $\mathcal M_1$ and $\mathcal M_2$, the intersection $\mathcal M_{1 \cap 2}$ corresponds to a metric that imposes the largest sizes that are smaller than those imposed by $\mathcal M_1$ and $\mathcal M_2$:
-$$ \mathcal M_{1 \cap 2} = \arg \min \{ \det(\mathcal M) |  \mathcal M \in \mathcal S^+ s.t. \mathcal M\ge \mathcal M_1, \mathcal M\ge \mathcal M_2\} $$
+In practice, depending on the CFD solver, the metric is either stored on the vertex or the cell center. The definition of an interpolation procedure on metrics is therefore mandatory to be able to compute the metric at any point of the domain. When more than two discrete metrics needs to be interpolated, it is important to use a consistent interpolation framework. For instance, the interpolation needs to be commutative (i.e. the resulting metric does not depend on the order of the interpolation operations between metrics). To that end, the log-Euclidean framework introduced by Arsigny et al. (2006) is used.
 
-![h:12cm center](images/intersection.svg) 
+### Log-Euclidean framework
 
-It is computed as follows: let $\mathcal P = (e_0 | ... | e_d)$ be the generalized eigenvectors of $(\mathcal M_0, \mathcal M_1)$:
-$$ \mathcal M_0 \mathcal P = \Lambda \mathcal M_1 \mathcal P $$
-then
-$$ \mathcal M_i = \mathcal P^{-1, T} \Lambda^{(i)} \mathcal P^{(-1)} $$
-with $\Lambda^{(i)}_{jk} = e_j^T \mathcal M_i e_k \delta_{jk}$. The intersection is then
-$$ \mathcal M_0 \cap \mathcal M_1 = \mathcal P^{-1, T} \Lambda^{(i,j)} \mathcal P^{-1}$$ 
-with $\Lambda^{(i,j)}_{jk} = \max(\Lambda^{(i)}_{jk}, \Lambda^{(j)}_{jk})$.
+The authors first define the notion of metric logarithm and matrix exponential. The **metric logarithm** is defined on the set of metric tensors. For metric tensor $\mathcal{M}=\mathcal{R}\Lambda\mathcal{R}^{\top}$, it is given by:
+
+$$
+\ln(\mathcal{M}):=\mathcal{R}\ln(\Lambda)\mathcal{R}^{\top}
+$$
+
+where $\ln(\Lambda) = \text{diag}(\ln(\lambda_i))$. The **matrix exponential** is defined on the set of symmetric matrices. For any symmetric matrix $S=\mathcal{Q}\Sigma\mathcal{Q}^{\top}$, it is given by:
+
+$$
+\exp(S):= \mathcal{Q}\exp(\Sigma)\mathcal{Q}^{\top}
+$$
+
+where $\exp(\Sigma)=\text{diag}(\exp(\xi_i))$. We can now define the **logarithmic addition** $\oplus$ and the **logarithmic scalar multiplication** $\odot$:
+
+$$
+\mathcal{M}_1 \oplus \mathcal{M}_2 := \exp(\ln(\mathcal{M}_1)+\ln(\mathcal{M}_2))
+$$
+
+$$
+\alpha \odot \mathcal{M}:=\exp(\alpha\cdot\ln(\mathcal{M}))=\mathcal{M}^{\alpha}
+$$
+
+The logarithmic addition is commutative and coincides with matrix multiplication whenever the two tensors $\mathcal{M}_1$ and $\mathcal{M}_2$ commute in the matrix sense.
+
+### Metric interpolation in the log-Euclidean framework
+
+Let $(\mathbf{x}_i)_{i=1,...k}$ be a set of cell centers and $(\mathcal{M}(\mathbf{x}_i))_{i=1,...k}$ their associated metrics. Then, for a point $\mathbf{x}$ of the domain such that:
+
+$$
+\mathbf{x}=\sum_{i=1}^k\alpha_i\cdot\mathbf{x}_i \text{ with } \sum_{i=1}^k\alpha_i=1
+$$
+
+the interpolated metric is defined by:
+
+$$
+\mathcal{M}(\mathbf{x})=\bigoplus_{i=1}^k\alpha_i\odot\mathcal{M}(\mathbf{x}_i)=\exp\left(\sum_{i=1}^k \alpha_i \ln(\mathcal{M}(\mathbf{x}_i)) \right)
+$$
+
+This interpolation is commutative, but its bottleneck is to perform $k$ diagonalizations and to request the use of the logarithm and the exponential functions which are CPU consuming. However, this procedure is essential to define continuously the metric map on the entire domain. Also, since CODA is a cell centered solver and Tucanos is vertex based, this interpolation definition is crucial to get the metric field at the vertexes of the mesh. Moreover, it has been demonstrated (Arsigny et al., 2006) that this interpolation preserves the maximum principle, i.e., for an edge $\mathbf{ab}$ with endpoint metrics $\mathcal{M}(\mathbf{a})$ and $\mathcal{M}(\mathbf{b})$ such that $\text{det}(\mathcal{M}(\mathbf{a}))<\text{det}(\mathcal{M}(\mathbf{b}))$ then we have:
+
+$$
+\text{det}(\mathcal{M}(\mathbf{a}))< \text{det}(\mathcal{M}(\mathbf{a}+t\mathbf{ab}))<\text{det}(\mathcal{M}(\mathbf{b})), \quad \forall t\in[0,1]
+$$
+
+## Metric Intersection
+
+In metric-based adaptation, the metric field computed from the error estimation does not take into account geometric or gradation constraints, that would be defined using different metric fields. **Metric intersection** is used to get a unique metric field. It consists in keeping the most restrictive size constraint in all directions imposed by this set of metrics.
+
+![Metric intersection and interpolation](images/Metric_intersection_and_interpolation.png)
+
+> **Figure 1:** *Left, view illustrating the metric intersection procedure with the simultaneous reduction in three dimensions. In red, the resulting metric of the intersection of the blue and green metrics. Right, metric interpolation along a segment where the endpoints metrics are the blue and violet ones. (losei 2008)*
+
+Formally speaking, let $\mathcal{M}_1$ and $\mathcal{M}_2$ be two metric tensors given at a point. The metric tensor $\mathcal{M}_{1\cap2}$ corresponding to the intersection of $\mathcal{M}_1$ and $\mathcal{M}_2$ is the one prescribing the largest possible size under the constraint that the size in each direction is always smaller than the sizes prescribed by $\mathcal{M}_1$ and $\mathcal{M}_2$. Let us give a geometric interpretation of this operator. Metric tensors are geometrically represented by an ellipse in 2D and an ellipsoid in 3D. But the intersection between two metrics is not directly the intersection between two ellipsoids as their geometric intersection is not an ellipsoid. Therefore, we seek for the largest ellipsoid representing $\mathcal{M}_{1\cap2}$ included in the geometric intersection of the ellipsoids associated with $\mathcal{M}_1$ and $\mathcal{M}_2$, cf. the Figure above (left). The ellipsoid (metric) verifying this property is obtained by using the simultaneous reduction of two metrics.
+
+### Simultaneous reduction
+
+The simultaneous reduction enables to find a common basis $(\mathbf{e}_1, \mathbf{e}_2, \mathbf{e}_3)$ such that $\mathcal{M}_1$ and $\mathcal{M}_2$ are congruent to a diagonal matrix in this basis, and then to deduce the intersected metric. To do so, the matrix $\mathcal{N}=\mathcal{M}_1^{-1}\mathcal{M}_2$ is introduced. $\mathcal{N}$ is diagonalizable with real-eigenvalues. The normalized eigenvectors of $\mathcal{N}$ denoted by $\mathbf{e}_1$, $\mathbf{e}_2$ and $\mathbf{e}_3$ constitute a common diagonalization basis for $\mathcal{M}_1$ and $\mathcal{M}_2$. The entries of the diagonal matrices, that are associated with the metrics $\mathcal{M}_1$ and $\mathcal{M}_2$ in this basis, are obtained with the Rayleigh formula:
+
+$$
+\lambda_i=\mathbf{e}_i^{\top}\mathcal{M}_1\mathbf{e}_i \text{ and } \mu_i=\mathbf{e}_i^{\top}\mathcal{M}_2\mathbf{e}_i
+$$
+
+**Remark:** $\lambda_i$ and $\mu_i$ are not the eigenvalues of $\mathcal{M}_1$ and $\mathcal{M}_2$. They are the spectral values associated with basis $(\mathbf{e}_1, \mathbf{e}_2, \mathbf{e}_3)$.
+
+Let $\mathcal{P}=(\mathbf{e}_1 \mathbf{e}_2 \mathbf{e}_3)$ be the matrix with the columns that are the eigenvectors $\{\mathbf{e}_i\}_{i=1...3}$ of $\mathcal{N}$. $\mathcal{P}$ is invertible as $(\mathbf{e}_1, \mathbf{e}_2, \mathbf{e}_3)$ is a basis of $\mathbb{R}^3$. We have:
+
+$$
+\mathcal{M}_1=\mathcal{P}^{-\top}\begin{pmatrix} \lambda_1 & 0 & 0 \\ 0 & \lambda_2 & 0 \\ 0 & 0 & \lambda_3 \end{pmatrix} \mathcal{P}^{-1} \text{ and } \mathcal{M}_2=\mathcal{P}^{-\top}\begin{pmatrix} \mu_1 & 0 & 0 \\ 0 & \mu_2 & 0 \\ 0 & 0 & \mu_3 \end{pmatrix} \mathcal{P}^{-1} 
+$$
+
+### Computing the metric intersection
+
+The resulting intersected metric $\mathcal{M}_{1\cap2}$ is then analytically given by:
+
+$$
+\mathcal{M}_{1\cap2}=\mathcal{M}_1\cap\mathcal{M}_2=\mathcal{P}^{-\top}\begin{pmatrix} \max(\lambda_1,\mu_1) & 0 & 0 \\ 0 & \max(\lambda_2,\mu_2) & 0 \\ 0 & 0 & \max(\lambda_3,\mu_3) \end{pmatrix} \mathcal{P}^{-1}
+$$
+
+The ellipsoid associated with $\mathcal{M}_{1\cap2}$ is the largest ellipsoid included in the geometric intersection region of the ellipsoids associated with $\mathcal{M}_1$ and $\mathcal{M}_2$.
+
+Numerically, to compute $\mathcal{M}_{1\cap2}$, the real-eigenvalues of $\mathcal{N}$ are first evaluated with a Newton algorithm. Then, the eigenvectors of $\mathcal{N}$ , which define $\mathcal{P}$, are computed using the algebra notions of image and kernel spaces.
 
 See [proof](#maths)
 
 ## Metric gradation
 
-It is sometimes desirable to control how fast edge lengths grow from from element to the next. This idea can be translated into constraints on the variation of the metric field on the edges of the mesh (see *Size gradation control of anisotropic meshes*, F. Alauzet, 2010 [pdf](https://pages.saclay.inria.fr/frederic.alauzet/download/Alauzet_Size%20gradation%20control%20of%20anisotropic%20meshes.pdf)) summarized as follows: 
-- The gradation on an edge $\mathbf e_{i,j} = \mathbf x_j - \mathbf x_i$ is (with $a = l_{\mathcal M_i} (e_{i,j}) / l_{\mathcal M_j} (e_{i,j})$ )
-$$\max\left(a, \frac{1}{a} \right)^\frac{1}{l_\mathcal M(e_{i,j})}$$ 
-- Given a metric $\mathcal M(\mathbf x) = R^T diag(s_1^2, \cdots s_d^2) R$, is is possible to span a field at any location $\mathbf y$ as
-$$ \mathcal M_s(\mathbf x, \mathbf y) = R^T diag(\eta_1^2 s_1^2, \cdots \eta_d^2s_d^2) R$$   
-with $\eta_i = 1 + s_i \|\mathbf y - \mathbf x\|_2\log(\beta)$ so that the gradation along $\mathbf y - \mathbf x$ is $\beta$
-- In practice a maximum gradation is enforces along edge $\mathbf e_{i,j} = \mathbf x_j - \mathbf x_i$, by modifying $\mathcal M_k$ to
-$$\widetilde{\mathcal M_j} = \mathcal M_j \cap \mathcal M_s(\mathbf x_i, \mathbf x_j)$$  
-and 
-$$\widetilde{\mathcal M_i} = \mathcal M_i \cap \mathcal M_s(\mathbf x_j, \mathbf x_i)$$  
-- Achieving a maximum gradation over all the edges in the mesh would require $\#_{edges}^2$ operations; in practices, the above operations is only applied on all the edges of the mesh a small number of times.
+Metric fields may have huge variations or may be quite irregular when evaluated from numerical solutions that present discontinuities or steep gradients. This makes the generation of a unit mesh difficult or impossible, thus leading to poor quality anisotropic meshes. Generating high-quality anisotropic meshes requires to smooth the metric field by bounding its variations in all directions. It also helps with the convergence of the implicit solver. **Mesh gradation** (Alauzet, 2010) consists in reducing in all directions the size prescribed at any points if the variation of the metric field is larger than a fixed threshold.
+
+### Spanning a metric field
+
+Let $\mathbf{p}$ be a point of a domain $\Omega$ supplied with a metric $\mathcal{M}_\mathbf{p}$ and $\beta$ the specified gradation. Two laws governing the metric growth in the domain are proposed. In the first one, the metric growth is homogeneous in the Euclidean metric field defined by $\mathcal{M}_\mathbf{p}$. The second metric growth is homogeneous in the physical space, i.e., the classical Euclidean space.
+
+The first law associates for any point $\mathbf{x}$ of the domain a unique scale factor with the metric given by:
+
+$$
+\eta^2(\mathbf{px})=(1+l_p(\mathbf{px})\cdot\ln(\beta))^{-2}=(1+\sqrt{\mathbf{px}^{\top} \mathcal{M}_\mathbf{p} \mathbf{px}}\cdot\ln(\beta))^{-2}
+$$
+
+With this formulation, each pointwise metric $\mathcal{M}_\mathbf{p}$ spans a global continuous smooth metric field all over domain $\Omega$ parametrized by the given gradation value $\beta$:
+
+$$
+(\mathcal{M}_{\mathbf{p}}(\mathbf{x}))_{\mathbf{x}\in\Omega} \quad \text{with } \mathcal{M}_{\mathbf{p}}(\mathbf{x})=\eta^2(\mathbf{px})\mathcal{M}_\mathbf{p}
+$$
+
+In this case, the resulting metric field grows homogeneously in the Euclidean metric space defined by $\mathcal{M}_{\mathbf{p}}$ as the scale factor depends on the length of segment $\mathbf{px}$ with respect to $\mathcal{M}_{\mathbf{p}}$. As a result, the shape of the metric is kept unchanged while growing. This law conserves the same anisotropic ratio.
+
+For the second law, we associate independently a growth factor with each eigenvalue of $\mathcal{M}_{\mathbf{p}}=\mathcal{R}\Lambda\mathcal{R}^{\top}$, with $\Lambda=\text{diag}(\lambda_i)_{i=1,3}$:
+
+$$
+\eta_i^2(\mathbf{px})=(1+\sqrt{\lambda_i}||\mathbf{px}||_2\cdot\ln(\beta))^{-2}
+$$
+
+the grown metric at $\mathbf{x}$ is given by:
+
+$$
+\mathcal{M}_{\mathbf{p}}(\mathbf{x})=\mathcal{R}\mathcal{N}(\mathbf{px})\Lambda\mathcal{R}^{\top} \quad \text{where } \mathcal{N}(\mathbf{px})= \begin{pmatrix} \eta_1^2(\mathbf{px}) & 0 & 0 \\ 0 & \eta_2^2(\mathbf{px}) & 0 \\ 0 & 0 & \eta_3^2(\mathbf{px}) \end{pmatrix}
+$$
+
+The resulting metric field grows homogeneously in the physical space. Indeed, each eigenvalue grows similarly in all directions, as the factor $\eta_i$ depends only on the distance (in the physical space) from the original point. Consequently, the shape, i.e., the anisotropic ratio of the metric, is no more preserved as the eigenvalues are growing separately and differently. This law gradually makes the metric more and more isotropic as it gradually propagates in the domain.
+
+Alauzet et al. (2021) suggest to mix these two laws to achieve an efficient metric gradation algorithm. For this new law, a growth factor is associated independently with each eigenvalue of $\mathcal{M}_{\mathbf{p}}$:
+
+$$
+\eta_i^2(\mathbf{px})=((1+\sqrt{\lambda_i}||\mathbf{px}||_2\cdot\ln(\beta))^t(1+l_p(\mathbf{px})\cdot\ln(\beta))^{1-t})^{-2}
+$$
+
+The authors consider $t=\frac{1}{8}$ within their numerical examples. For the applications in the work, we will use $t=1.$
+
+### Metric reduction
+
+The reduced metric at a point $\mathbf{x}$ of the domain $\Omega$ is given by the strongest size constraint imposed by the metric at $\mathbf{x}$ and by the spanned metrics (parametrized by the given size gradation) of all the other points of the domain at $\mathbf{x}$:
+
+$$
+\widetilde{\mathcal{M}(\mathbf{x})} = \left(\bigcap_{\mathbf{p}\in\Omega}\mathcal{M}_{\mathbf{p}}(\mathbf{x})\right)\cap \mathcal{M}(\mathbf{x})
+$$
+
+Practical implementation are given in Alauzet (2010).
 
 ## Thresholds on the local sizes
 
@@ -51,23 +164,32 @@ In practice $J_{K, \Delta}$ is computed as $J_{K, \Delta} = J_{K, \perp} J_{\per
     - $J_{K, \perp} = (\mathbf x_1 - \mathbf x_0 | \cdots | \mathbf x_d - \mathbf x_0)$ is the jacobian of transformation from the reference orthogonal element to the physical element
     - $J_{\perp, \Delta}$ is the jacobian of transformation from the reference equilateral element to the reference orthogonal element (independent of $K$ )
 
-### Controling the step between two metrics
+## Controlling the step between two metrics
 
-In the remeshing process, it may be interesting to limit the step between the element-implied and target metrics
+In the remeshing process, it may be interesting to control the step between the element-implied and target metrics. Such control is available within the remesher **Tucanos** and specified by the parameter $f$.
 
-Given two metric fields $\mathcal M_1$ and $\mathcal M_2$, the objective is to find $\mathcal M = \mathcal L(\mathcal M_1, \mathcal M_2, f)$ *as close as possible* from $\mathcal M_2$ such that, for all edges $e$
-$$1/f \le \sqrt{\frac{e^T \mathcal M e}{e^T \mathcal M_1 e}} \le f$$
-i.e. to have 
-$$1/f \le \lambda_{min}(\mathcal M_1^{-1/2}\mathcal M \mathcal M_1^{-1/2}) \le \lambda_{max}(\mathcal M_1^{-1/2}\mathcal M \mathcal M_1^{-1/2}) \le f$$
-- If *as close as possible* is defined as minimizing the Froebenius norm $\|\mathcal M_0^{-1/2} (\mathcal M - \mathcal M_2) \mathcal M_0^{-1/2}\|_F$, the optimal $\mathcal M$ is computed as follows
-    - compute $\mathcal N_1 := \mathcal M_0^{-1/2} \mathcal M_1 \mathcal M_0^{-1/2}$,
-    - compute the eigenvalue decomposition $Q D Q^T = \mathcal N_1$,
-    - compute $\mathcal N^\ast := Q \mathrm{diag}(\hat\lambda_i) Q^T$ where $\hat\lambda_i := \min(\max(\lambda_i, 1/f ), f )$,
-    - compute $\mathcal M^\ast := \mathcal M_0^{1/2} \mathcal N^\ast \mathcal M_0^{1/2}$.
+Given two metric fields $\mathcal{M}_1$ and $\mathcal{M}_2$, the objective is to find $\mathcal{M} = \mathcal{L}(\mathcal{M}_1, \mathcal{M}_2, f)$ *as close as possible* from $\mathcal{M}_2$ such that, for all edges $e$:
 
-![h:12cm center](images/step.svg) 
+$$
+\frac{1}{f} \le \sqrt{\frac{e^T \mathcal{M} e}{e^T \mathcal{M}_1 e}} \le f
+$$
 
-(the thin blue lines represent $2\mathcal M_1$ and $1/2 \mathcal M_1$)
+i.e. to have:
+
+$$
+\frac{1}{f} \le \lambda_{\min}(\mathcal{M}_1^{-\frac{1}{2}}\mathcal{M} \mathcal{M}_1^{-\frac{1}{2}}) \le \lambda_{\max}(\mathcal{M}_1^{-\frac{1}{2}}\mathcal{M} \mathcal{M}_1^{-\frac{1}{2}}) \le f
+$$
+
+Practically, we define *as close as possible* as minimizing the Froebenius norm $\|\mathcal{M}_1^{-\frac{1}{2}} (\mathcal{M} - \mathcal{M}_2) \mathcal{M}_1^{-\frac{1}{2}}\|_F$. The optimal $\mathcal{M}$ is then computed as follows:
+
+  * compute $\mathcal{N} := \mathcal{M}_1^{-\frac{1}{2}} \mathcal{M}_2 \mathcal{M}_1^{-\frac{1}{2}}$,
+  * compute the eigenvalue decomposition $Q D Q^T = \mathcal{N}$, with $D=\text{diag}(\lambda_i)$
+  * compute $\mathcal{N}^\ast := Q \text{diag}(\hat\lambda_i) Q^T$ where $\hat\lambda_i := \min(\max(\lambda_i, \frac{1}{f} ), f )$,
+  * compute $\mathcal{M}^\ast := \mathcal{M}_1^{\frac{1}{2}} \mathcal{N}^\ast \mathcal{M}_1^{\frac{1}{2}}$.
+
+![Representation of the controlled metric](images/step.svg)
+
+> **Figure 2:** *Representation of the controlled metric $\mathcal{L}(\mathcal{M}_1, \mathcal{M}_2, f)$ by stepping with stepping parameter $f=2$. The thin blue lines represent $2\mathcal{M}_1$ and $\frac{1}{2} \mathcal{M}_1$, X. Garnaud*
 
 See [proof](#maths)
 
