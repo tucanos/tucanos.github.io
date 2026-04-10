@@ -18,9 +18,9 @@ A mesh is valid if
 - All the elements have a volume $|K_i| > 0$,
 - All the faces must be either either
     - tagged if 
-        - belong to only one element. In this case, they must be oriented outwards
-        - belong to two elements with different tags
-        - (belong to more than two elements)
+        - it belongs to only one element. In this case, they must be oriented outwards
+        - it belongs to two elements with different tags
+        - it belongs to more than two elements
     - untagged
 
-and consistent with the geometry (i.e. a CAD-like model) if all the vertices of the tagged faces lie on the corresponding geometry surfaces.
+The mesh also has to be consistent with the geometry (i.e. a CAD-like model) if all the vertices of the tagged faces lie on the corresponding geometry surfaces.
