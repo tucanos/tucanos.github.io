@@ -4,7 +4,7 @@ Input metric                 |  Adapted mesh
 :---------------------------:|:-------------------------:
 ![metric](images/metric.svg) |  ![adapted mesh](images/adapted.svg)
 
-The idea is to perform a series of local modification on an input mesh to have a 
+The idea is to perform a series of local modification on an input mesh to have 
 - edge lengths that are of approximately unit length in the metric space
 - element qualities as high as possible
 
