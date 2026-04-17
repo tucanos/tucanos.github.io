@@ -33,7 +33,7 @@ Finally, as metric tensor $\mathcal{M}$ is symmetric, it is diagonalizable. It t
 
 $$\mathcal{M} = \mathcal{R} \Lambda \mathcal{R}^{\top}$$
 
-where $\mathcal{R}$ is an orthonormal matrix composed of the eigvenvectors $(\mathbf{v_i})_{i=1,d}$ of $\mathcal{M}$:
+where $\mathcal{R}$ is an orthonormal matrix composed of the eigenvectors $(\mathbf{v_i})_{i=1,d}$ of $\mathcal{M}$:
 
 $$\mathcal{R}=(\mathbf{v_1} \quad \dots \quad \mathbf{v_d})$$
 
@@ -73,7 +73,7 @@ $$
 $$
 
 ![Natural mapping associated with metric $\mathcal{M}$](images/metric_mapping.png)
-> **Figure 2:** *Natural mapping associated with metric $\mathcal{M}$. (losei 2008)*
+> **Figure 2:** *Natural mapping associated with metric $\mathcal{M}$. (Loseille 2008)*
 
 for more details, see A. Loseille and F. Alauzet, *Continuous mesh framework. Part I: well-posed continuous interpolation error*, SIAM J. Numer. Anal., Vol. 49, Issue 1, pp. 38-60, 2011. [PDF](https://pages.saclay.inria.fr/frederic.alauzet/download/Loseille_Continuous%20mesh%20framework%20part%20I%20Well-posed%20continuous%20interpolation%20error.pdf)
 

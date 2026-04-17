@@ -1,6 +1,6 @@
 # Simplex meshes
 
-Mesh adaptation can only be applied to conformal meshes made only of simplex elements, i.e. triangles in 2D and tetrahedra in 3d. For other types of meshes, the elements must initially be split into simplices: algorithms for standard elements are given in [*How to Subdivide Pyramids, Prisms and Hexahedra into Tetrahedra*, Julien Dompierre Paul Labbé Marie-Gabrielle Vallet Ricardo Camarero](https://www.researchgate.net/publication/221561839_How_to_Subdivide_Pyramids_Prisms_and_Hexahedra_into_Tetrahedra) and implemented in `tucanos`.
+Mesh adaptation can only be applied to conformal meshes made only of simplex elements, i.e. triangles in 2D and tetrahedra in 3D. For other types of meshes, the elements must initially be split into simplices: algorithms for standard elements are given in [*How to Subdivide Pyramids, Prisms and Hexahedra into Tetrahedra*, Julien Dompierre Paul Labbé Marie-Gabrielle Vallet Ricardo Camarero](https://www.researchgate.net/publication/221561839_How_to_Subdivide_Pyramids_Prisms_and_Hexahedra_into_Tetrahedra) and implemented in `tucanos`.
 
 
 ## Mesh

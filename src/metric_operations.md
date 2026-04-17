@@ -1,6 +1,6 @@
 # Metric operations
 
-Building a metric that is suitable for remeshing may require [combining information from different sources](#metric-intersection) or imposing constraints (e.g. [minimum or maximum edge lengths](#thresholds-on-the-local-sizes), [smooth variation](#controling-the-step-between-two-metrics) with respect to [the input mesh](#element-implied-metric), ... ), 
+Building a metric that is suitable for remeshing may require [combining information from different sources](#metric-intersection) or imposing constraints (e.g. [minimum or maximum edge lengths](#thresholds-on-the-local-sizes), [smooth variation](#controling-the-step-between-two-metrics) with respect to [the input mesh](#element-implied-metric), ... ). 
 
 ## Metric Interpolation
 
@@ -58,7 +58,7 @@ In metric-based adaptation, the metric field computed from the error estimation 
 
 ![Metric intersection and interpolation](images/Metric_intersection_and_interpolation.png)
 
-> **Figure 1:** *Left, view illustrating the metric intersection procedure with the simultaneous reduction in three dimensions. In red, the resulting metric of the intersection of the blue and green metrics. Right, metric interpolation along a segment where the endpoints metrics are the blue and violet ones. (losei 2008)*
+> **Figure 1:** *Left, view illustrating the metric intersection procedure with the simultaneous reduction in three dimensions. In red, the resulting metric of the intersection of the blue and green metrics. Right, metric interpolation along a segment where the endpoints metrics are the blue and violet ones. (Loseille 2008)*
 
 Formally speaking, let $\mathcal{M}_1$ and $\mathcal{M}_2$ be two metric tensors given at a point. The metric tensor $\mathcal{M}_{1\cap2}$ corresponding to the intersection of $\mathcal{M}_1$ and $\mathcal{M}_2$ is the one prescribing the largest possible size under the constraint that the size in each direction is always smaller than the sizes prescribed by $\mathcal{M}_1$ and $\mathcal{M}_2$. Let us give a geometric interpretation of this operator. Metric tensors are geometrically represented by an ellipse in 2D and an ellipsoid in 3D. But the intersection between two metrics is not directly the intersection between two ellipsoids as their geometric intersection is not an ellipsoid. Therefore, we seek for the largest ellipsoid representing $\mathcal{M}_{1\cap2}$ included in the geometric intersection of the ellipsoids associated with $\mathcal{M}_1$ and $\mathcal{M}_2$, cf. the Figure above (left). The ellipsoid (metric) verifying this property is obtained by using the simultaneous reduction of two metrics.
 
@@ -88,7 +88,7 @@ $$
 
 The ellipsoid associated with $\mathcal{M}_{1\cap2}$ is the largest ellipsoid included in the geometric intersection region of the ellipsoids associated with $\mathcal{M}_1$ and $\mathcal{M}_2$.
 
-Numerically, to compute $\mathcal{M}_{1\cap2}$, the real-eigenvalues of $\mathcal{N}$ are first evaluated with a Newton algorithm. Then, the eigenvectors of $\mathcal{N}$ , which define $\mathcal{P}$, are computed using the algebra notions of image and kernel spaces.
+Numerically, to compute $\mathcal{M}_{1\cap2}$, the real-eigenvalues of $\mathcal{N}$ are first evaluated with a Newton algorithm. Then, the eigenvectors of $\mathcal{N}$, which define $\mathcal{P}$, are computed using the algebra notions of image and kernel spaces.
 
 See [proof](#maths)
 
@@ -295,7 +295,7 @@ $$
     ,
 $$
 which is reached for $\hat D := \mathrm{diag}(\hat\lambda_i)$ where $\hat \lambda_i = \alpha$ if $\lambda_i < \alpha$, $\hat\lambda_i = \beta$ if $\lambda_i > \beta$ and otherwise $\hat\lambda_i = \lambda_i$.
-Again, the matrix $\hat D$ is symmetric and indeed in $\mathcal S_{\alpha, \beta}$ (because since $\hat D$ is diagonal, $\alpha \leq \hat\lambda_i \leq \beta \Leftrightarrow \alpha I_n \leq \hat D \leq \beta I_n$) and thus is the unique solution of the problem (existence and uniqueness beeing given by the projection on closed convex sets in a Hilbert space).
+Again, the matrix $\hat D$ is symmetric and indeed in $\mathcal S_{\alpha, \beta}$ (because since $\hat D$ is diagonal, $\alpha \leq \hat\lambda_i \leq \beta \Leftrightarrow \alpha I_n \leq \hat D \leq \beta I_n$) and thus is the unique solution of the problem (existence and uniqueness being given by the projection on closed convex sets in a Hilbert space).
 
 
 ### Metric optimization problem
@@ -332,7 +332,7 @@ $$||| \mathcal M_1 - \mathcal M^\ast|||
     \big\}
 $$
 
-> **lemma** : 
+> **Lemma** : 
 > Let $\mathcal M, \mathcal M_0 \in \mathcal S_n^{++}(\mathbb R)$ two metrics > and $\alpha, \beta \in \mathbb R$. The function $x \in \mathbb R^n \backslash \{ 0 \} \mapsto r(\mathcal M, \mathcal M_0; x)^2$ is bounded and reaches its bounds which are the minimum and maximum of the eigenvalues of $\mathcal M_0^> {-1/2} \mathcal M \mathcal M_0^{-1/2}$. Thus, 
 > $$
 > \forall x \in \mathbb R^n \backslash \{0 \}, \enspace
@@ -345,7 +345,7 @@ $$
 > \alpha \mathcal M_0 \leq \mathcal M \leq \beta \mathcal M_0
 > $$
 
-Thanks to this lemma, the admissible set $\mathcal R_{\alpha, \beta}(\mathcal M_0)$ can be re-writen as 
+Thanks to this lemma, the admissible set $\mathcal R_{\alpha, \beta}(\mathcal M_0)$ can be re-written as 
 $$
     \mathcal R_{\alpha, \beta}(\mathcal M_0) 
     =
@@ -398,7 +398,7 @@ and can be computed as follows:
 - Compute $\mathcal N^\ast := P_{\alpha, \beta}(\mathcal N_1) = Q \mathrm{diag}(\hat\lambda_i) Q^T, \quad \text{where }\hat\lambda_i := \min\big(\max\big(\lambda_i, \alpha \big), \beta \big)$.
 - Compute $\mathcal M^\ast := \mathcal M_0^{1/2} \mathcal N^\ast \mathcal M_0^{1/2}$
 
-**Remark** Maybe a more suitable formulation would minimizing the Frobenius norm $||| \mathcal M_1 - \mathcal M ||| := \| \mathcal M_1 - \mathcal M\|_F$.
+**Remark**: Maybe a more suitable formulation would be minimizing the Frobenius norm $||| \mathcal M_1 - \mathcal M ||| := \| \mathcal M_1 - \mathcal M\|_F$.
 This leads to a different problem. For instance, if 
 $$
         \mathcal M_0 =
@@ -424,7 +424,7 @@ The two distance measures give very different results... does it matter in pract
 
 #### Problem.
 
-Given two metrics $\mathcal M_1, \mathcal M_2 \in \mathcal S_n^{++}(\mathbb R)$, we want to find a metric $\mathcal M_{1\cap 2} \in \mathcal S_n^{++}(\mathbb R)$ which respects the most restrictive length of $\mathcal M_1$ and $\mathcal M_1$. Moreover, we want that this metric beeing maximal. 
+Given two metrics $\mathcal M_1, \mathcal M_2 \in \mathcal S_n^{++}(\mathbb R)$, we want to find a metric $\mathcal M_{1\cap 2} \in \mathcal S_n^{++}(\mathbb R)$ which respects the most restrictive length of $\mathcal M_1$ and $\mathcal M_1$. Moreover, we want that this metric being maximal. 
 More formally, the lenght restriction can be expressed by 
 $$
     \forall x \in \mathbb R^{n} \backslash \{ 0 \}, \quad 
@@ -471,7 +471,7 @@ $$ \mathcal X \in \mathcal S_n(\mathbb R), $$
 $$ 0 \leq \mathcal X \leq I_n, $$
 $$\qquad 0 \leq \mathcal X \leq D.$$
 
-This problem can now to be solved explicitly by finding an upper bound.
+This problem can now be solved explicitly by finding an upper bound.
 Let $\mathcal Y \in \mathcal S_n(\mathbb R)$ such that $\mathcal X = \mathcal Y^2$,
 then Hadamard inequality provides $\mathrm{det} \,\mathcal X = (\mathrm{det} \,\mathcal Y)^2 \leq \prod_j | \mathcal Y_{\bullet i} |_2^2$. Moreover, $\mathcal X_{jj} = \sum_k \mathcal Y_{jk} \mathcal Y_{kj} = | \mathcal Y_{\bullet j} |_2^2$, from which $\mathrm{det} \, \mathcal X \leq \prod_i \mathcal X_{ii}$ and then, using the two constraints: $0 \leq \mathcal X \leq I_n \text{ and } 0 \leq \mathcal X \leq D \Rightarrow 0 \leq \mathcal X_{ii} \leq \min(D_{ii}, 1)$, one gets the upper bound
 $$
@@ -496,7 +496,7 @@ $$
         \big| \mathrm{det} \, M \big| \leq \prod_{i = 1}^n | v_i |_2
         ,
 $$
-with equality iff the $(v_1, \dots, v_n)$ are orthogonal.
+with equality if the $(v_1, \dots, v_n)$ are orthogonal.
     
 The result if clear if $M$ is singular, if not let $\hat M := \big[ \hat v_1 | \dots | \hat v_n \big]$, $\hat v_i = v_i / | v_i |_2$ so that one has to show that $|\mathrm{det} \, \hat M| \leq 1$.
 $\hat M^\ast \hat M \in \mathcal H_n(\mathbb C)$ is hermitian 

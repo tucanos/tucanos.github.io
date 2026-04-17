@@ -10,7 +10,7 @@ The figure below shows length computation in different metric spaces. We see tha
 
 ![Iso-values of the distance](images/Isolength_wrt_metric.png)
 
-> **Figure 1:** *Iso-values of the distance w.r.t canonical Euclidean space (left), euclidean space defined by $\mathcal{M}$ and Riemannian space defined by $\mathcal{M}(\cdot)$ (loseille 2008)*
+> **Figure 1:** *Iso-values of the distance w.r.t canonical Euclidean space (left), euclidean space defined by $\mathcal{M}$ and Riemannian space defined by $\mathcal{M}(\cdot)$ (Loseille 2008)*
 
 Given a bounded subset $K$ of $\mathbb{R}^d$, the volume $|K|_{\mathcal{M}(\cdot)}$ is given by:
 
@@ -28,7 +28,7 @@ $$|K|_{\mathcal{M}}=\frac{\sqrt{n+1}}{2^{n/2}n!} \text{ and } |K|_{\mathcal{I}_n
 
 ![Geometric representation of unit tetrahedrons](images/unit_element.png)
 
-> **Figure 2:** *Geometric representation of unit tetrahedrons in metric $\mathcal{I}_3$ (left) and an anisotropic metric $\mathcal{M}$ (right) (loseille 2008)*
+> **Figure 2:** *Geometric representation of unit tetrahedrons in metric $\mathcal{I}_3$ (left) and an anisotropic metric $\mathcal{M}$ (right) (Loseille 2008)*
 
 The metric $\mathcal{M}$ for which $K$ is unit is unique and referred to as the *implied metric* of $K$. Conversely, when given a metric $\mathcal{M}$, the set of unit elements is not empty. Similarly, the unit notion can be extended to a mesh composed of simplexes with a continuous metric field $\mathcal{M}(\cdot)$. The mesh could then be said unit, if all its simplex elements are unit in $\mathcal{M}(\cdot)$. However, it is well known that the equilateral tetrahedron does not fill a subset $\Omega$ of $\mathbb{R}^3$. Following the proposition in the literature (Loseille 2011), the unit notion for simplex elements is relaxed to the quasi-unit element notion. $K$ is said to be **quasi-unit** if:
 
@@ -72,7 +72,7 @@ In the context of error estimation, this notion enables convergence order study 
 
 ![Different unit elements](images/Embedded_metric.png)
 
-> **Figure 3:** *Different unit elements where only the density increases from left to right. (losei 2008)*
+> **Figure 3:** *Different unit elements where only the density increases from left to right. (Loseille 2008)*
 
 ### Local decomposition of the metric field in $\mathbb{R}^n$
 
