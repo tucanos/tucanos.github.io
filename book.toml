@@ -3,6 +3,9 @@ authors = []
 language = "en"
 src = "src"
 
+[rust]
+edition = "2021"
+
 [output.html]
 mathjax-support = false
 

@@ -20,6 +20,7 @@ Internal diagonals are selected from local vertex ordering and edge comparisons 
 Rust:
 
 ```rust
+# extern crate tmesh;
 use tmesh::{Tag, Vert3d};
 use tmesh::mesh::{Hexahedron, Mesh, Mesh3d, Pyramid};
 

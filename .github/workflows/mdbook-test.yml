@@ -1,0 +1,38 @@
+name: Test mdBook Rust snippets
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  mdbook-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout docs repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: 1.99.1
+
+      - name: Install mdBook and mdbook-katex
+        run: |
+          cargo install --locked mdbook
+          cargo install --locked mdbook-katex
+
+      - name: Clone and build remote tucanos crates
+        run: |
+          git clone --depth 1 https://github.com/tucanos/tucanos /tmp/tucanos-remote
+          cd /tmp/tucanos-remote
+          cargo build -p tmesh -p tucanos
+
+      - name: Run mdbook test
+        env:
+          TMPDIR: ${{ github.workspace }}/.tmp-rustdoc
+        run: |
+          mkdir -p "$TMPDIR"
+          mdbook test . \
+            -L /tmp/tucanos-remote/target/debug/deps \
+            -L /tmp/tucanos-remote/target/debug

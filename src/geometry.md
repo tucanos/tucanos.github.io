@@ -84,6 +84,8 @@ Output: a quadratic mesh whose curved boundary better matches the geometric mode
 ## Rust example
 
 ```rust
+# extern crate tmesh;
+# extern crate tucanos;
 use tmesh::mesh::{Mesh, Mesh2d, rectangle_mesh};
 use tucanos::mesh::topology::MeshTopology;
 
