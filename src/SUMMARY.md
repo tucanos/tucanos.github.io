@@ -5,7 +5,6 @@
 # User Guide
 
 - [Mesh](mesh.md)
-  - [Simplex mesh (legacy)](simplex_mesh.md)
   - [Element types](element_types.md)
   - [Simplices](simplices.md)
     - [Subdivision of canonical elements](subdivision.md)
@@ -18,6 +17,7 @@
   - [Gradient and Hessian computations](gradients.md)
   - [Spatial indices](spatial_indices.md)
   - [Non-manifold meshes](non_manifold.md)
+  - [Curvature](curvature.md)
   - [Mesh quality and integration](mesh_quality.md)
   - [Validity](validity.md)
   - [Mesh I/O](io.md)
@@ -25,12 +25,13 @@
   - [Isosurface splitting](isosurface.md)
 - [Mesh adaptation](adaptation.md)
   - [Topology](topology.md)
+  - [Geometry](geometry.md)
+
   <!-- - [Metric](metric.md)
     - [Riemannian metric](riemannian_metric.md)
     - [Metric operations](metric_operations.md)
     - [Optimal metric](optimal_metric.md)
     - [Curvature metric](curvature_metric.md)
-  - [Geometry](geometry.md)
   - [Remeshing](remesher.md)
     - [Cavities](cavities.md)
     - [Remeshing loop](remeshing_loop.md)
