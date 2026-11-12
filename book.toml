@@ -1,11 +1,10 @@
 [book]
 authors = []
 language = "en"
-multilingual = false
 src = "src"
 
 [output.html]
-mathjax-support = true
+mathjax-support = false
 
 [output.html.playground]
 runnable = false
