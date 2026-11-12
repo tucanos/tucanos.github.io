@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="700" height="360" viewBox="0 0 700 360">
+  <defs>
+    <style>
+      .edge { stroke: #0f172a; stroke-width: 2.6; fill: none; }
+      .surf1 { fill: #93c5fd; fill-opacity: 0.42; }
+      .surf2 { fill: #fca5a5; fill-opacity: 0.42; }
+      .node { fill: #dc2626; }
+      .v { fill: #0f172a; }
+    </style>
+  </defs>
+
+  <!-- Shared vertex N -->
+  <!-- Blue tetrahedron corner: faces N-A-B, N-B-C, N-C-A -->
+  <!-- Red tetrahedron corner: faces N-D-E, N-E-F, N-F-D -->
+
+  <!-- blue faces -->
+  <polygon points="350,190 220,110 170,250" class="surf1"/>
+  <polygon points="350,190 170,250 280,315" class="surf1"/>
+  <polygon points="350,190 280,315 220,110" class="surf1"/>
+
+  <!-- red faces -->
+  <polygon points="350,190 500,110 560,250" class="surf2"/>
+  <polygon points="350,190 560,250 430,325" class="surf2"/>
+  <polygon points="350,190 430,325 500,110" class="surf2"/>
+
+  <!-- blue edges -->
+  <line x1="350" y1="190" x2="220" y2="110" class="edge"/>
+  <line x1="220" y1="110" x2="170" y2="250" class="edge"/>
+  <line x1="170" y1="250" x2="350" y2="190" class="edge"/>
+  <line x1="170" y1="250" x2="280" y2="315" class="edge"/>
+  <line x1="280" y1="315" x2="350" y2="190" class="edge"/>
+  <line x1="280" y1="315" x2="220" y2="110" class="edge"/>
+
+  <!-- red edges -->
+  <line x1="350" y1="190" x2="500" y2="110" class="edge"/>
+  <line x1="500" y1="110" x2="560" y2="250" class="edge"/>
+  <line x1="560" y1="250" x2="350" y2="190" class="edge"/>
+  <line x1="560" y1="250" x2="430" y2="325" class="edge"/>
+  <line x1="430" y1="325" x2="350" y2="190" class="edge"/>
+  <line x1="430" y1="325" x2="500" y2="110" class="edge"/>
+
+  <circle cx="350" cy="190" r="8" class="node"/>
+  <circle cx="220" cy="110" r="5" class="v"/>
+  <circle cx="170" cy="250" r="5" class="v"/>
+  <circle cx="280" cy="315" r="5" class="v"/>
+  <circle cx="500" cy="110" r="5" class="v"/>
+  <circle cx="560" cy="250" r="5" class="v"/>
+  <circle cx="430" cy="325" r="5" class="v"/>
+</svg>

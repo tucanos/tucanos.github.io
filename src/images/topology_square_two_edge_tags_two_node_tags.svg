@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="520" height="380" viewBox="0 0 520 380">
+  <defs>
+    <style>
+      .edge-blue { stroke: #2563eb; stroke-width: 8; fill: none; stroke-linecap: round; }
+      .edge-red { stroke: #dc2626; stroke-width: 8; fill: none; stroke-linecap: round; }
+      .node { fill: #111827; }
+      .tag-a { fill: #16a34a; }
+      .tag-b { fill: #a855f7; }
+    </style>
+  </defs>
+
+  <!-- Square vertices -->
+  <!-- A=(120,280), B=(360,280), C=(360,80), D=(120,80) -->
+
+  <!-- Two blue edges -->
+  <line x1="120" y1="80" x2="120" y2="280" class="edge-blue"/>
+  <line x1="120" y1="80" x2="360" y2="80" class="edge-blue"/>
+
+  <!-- Two red edges -->
+  <line x1="360" y1="80" x2="360" y2="280" class="edge-red"/>
+  <line x1="120" y1="280" x2="360" y2="280" class="edge-red"/>
+
+  <!-- Default nodes -->
+  <circle cx="120" cy="80" r="6" class="node"/>
+  <circle cx="360" cy="280" r="6" class="node"/>
+
+  <!-- Two differently tagged nodes (the other two vertices) -->
+  <circle cx="120" cy="280" r="10" class="tag-a"/>
+  <circle cx="360" cy="80" r="10" class="tag-b"/>
+</svg>

@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="616" height="350" viewBox="0 0 88 50">
+  <defs>
+    <style>
+      .small { font: 500 2.1px 'DejaVu Sans', sans-serif; fill: #4b5563; }
+      .vtag { font: 600 2.4px 'DejaVu Sans', sans-serif; fill: #1f2937; }
+    </style>
+  </defs>
+
+  <g style="fill:none;stroke-width:.5;stroke-linejoin:round;stroke-linecap:round">
+    <!-- boundary edges -->
+    <path d="M10 42 L42 42 L42 10 L10 10 Z" style="stroke:#0072ce"/>
+    <!-- interior edge joining two boundary vertices -->
+    <path d="M10 42 L42 10" style="stroke:#ea580c"/>
+    <g style="fill:#1f2937;stroke:none">
+      <circle cx="10" cy="42" r=".8"/>
+      <circle cx="42" cy="42" r=".8"/>
+      <circle cx="42" cy="10" r=".8"/>
+      <circle cx="10" cy="10" r=".8"/>
+    </g>
+
+    <!-- legend swatches -->
+    <path d="M52 16 H57" style="stroke:#0072ce"/>
+    <path d="M52 28 H57" style="stroke:#ea580c"/>
+  </g>
+
+  <!-- vertex tags: identical at the four corners -->
+  <text x="10" y="7.5" class="vtag" text-anchor="middle">(1, 1)</text>
+  <text x="42" y="7.5" class="vtag" text-anchor="middle">(1, 1)</text>
+  <text x="10" y="46.5" class="vtag" text-anchor="middle">(1, 1)</text>
+  <text x="42" y="46.5" class="vtag" text-anchor="middle">(1, 1)</text>
+
+  <text x="58.5" y="16.8" class="small">boundary edge</text>
+  <text x="58.5" y="28.8" class="small">interior edge between</text>
+  <text x="58.5" y="32.2" class="small">boundary vertices</text>
+</svg>

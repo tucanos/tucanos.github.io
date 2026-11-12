@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="420" viewBox="0 0 760 420">
+  <defs>
+    <style>
+      .edge { stroke: #111827; stroke-width: 2.4; fill: none; }
+      .shared { stroke: #dc2626; stroke-width: 7; stroke-linecap: round; }
+      .node { fill: #111827; }
+    </style>
+  </defs>
+
+  <!-- Triangle with face tag 11 -->
+  <polygon points="170,320 330,210 140,130" fill="#93c5fd" opacity="0.45"/>
+  <line x1="170" y1="320" x2="330" y2="210" class="edge"/>
+  <line x1="330" y1="210" x2="140" y2="130" class="edge"/>
+  <line x1="140" y1="130" x2="170" y2="320" class="edge"/>
+
+  <!-- Triangle with face tag 22 -->
+  <polygon points="170,320 330,210 470,320" fill="#fca5a5" opacity="0.45"/>
+  <line x1="170" y1="320" x2="330" y2="210" class="edge"/>
+  <line x1="330" y1="210" x2="470" y2="320" class="edge"/>
+  <line x1="470" y1="320" x2="170" y2="320" class="edge"/>
+
+  <!-- shared edge highlight -->
+  <line x1="170" y1="320" x2="330" y2="210" class="shared"/>
+
+  <!-- vertices -->
+  <circle cx="170" cy="320" r="5.5" class="node"/>
+  <circle cx="330" cy="210" r="5.5" class="node"/>
+  <circle cx="140" cy="130" r="5.5" class="node"/>
+  <circle cx="470" cy="320" r="5.5" class="node"/>
+</svg>
