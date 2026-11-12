@@ -80,6 +80,7 @@ This guarantees that shared edges reuse the same midpoint vertex id.
 Rust example:
 
 ```rust
+# extern crate tmesh;
 use tmesh::mesh::{Mesh, Mesh2d, QuadraticMesh2d, rectangle_mesh, to_quadratic::to_quadratic_triangle_mesh};
 
 let msh = rectangle_mesh::<Mesh2d>(1.0, 8, 1.0, 8);
