@@ -2,14 +2,15 @@
 
 ## Riemannian metric space
 
-A Riemannian metric space $(\mathcal{R}^d, \mathcal{M}(\mathbf{x}))$ is defined by a continuous metric field $\mathcal{M}(\cdot)$ in $\mathcal{R}^d$. The **length** of an edge $\mathbf{ab}$ is computed using the path $\gamma(t)=\mathbf{a}+t\mathbf{ab}$ where $t\in[0,1]$:
+A Riemannian metric space $(\mathbb{R}^d, \mathcal{M}(\mathbf{x}))$ is defined by a continuous metric field $\mathcal{M}(\cdot)$ in $\mathbb{R}^d$. The **length** of an edge $\mathbf{ab}$ is computed using the path $\gamma(t)=\mathbf{a}+t\mathbf{ab}$ where $t\in[0,1]$:
 
-$$l_\mathcal{M}(\mathbf{ab})=\int_0^1||\gamma^{'}(t)||dt=\int_0^1\sqrt{\mathbf{ab}^{\top}\mathcal{M}(\mathbf{a}+t\mathbf{ab})\mathbf{ab}}dt$$
+$$l_\mathcal{M}(\mathbf{ab})=\int_0^1\|\gamma'(t)\|\,dt=\int_0^1\sqrt{\mathbf{ab}^{\top}\mathcal{M}(\mathbf{a}+t\mathbf{ab})\mathbf{ab}}\,dt$$
 
 The figure below shows length computation in different metric spaces. We see that the iso-values of distance in the Riemannian space are "distorted" with the loss of symmetry when compared to the Euclidean spaces.
 
 ![Iso-values of the distance](images/Isolength_wrt_metric.png)
 
+> [!NOTE]
 > **Figure 1:** *Iso-values of the distance w.r.t canonical Euclidean space (left), euclidean space defined by $\mathcal{M}$ and Riemannian space defined by $\mathcal{M}(\cdot)$ (Loseille 2008)*
 
 Given a bounded subset $K$ of $\mathbb{R}^d$, the volume $|K|_{\mathcal{M}(\cdot)}$ is given by:
@@ -18,7 +19,7 @@ $$|K|_{\mathcal{M}(\cdot)}=\int_K\sqrt{\text{det}\mathcal{M(\mathbf{x})}}d\mathb
 
 ### Unit elements and meshes
 
-Let $K$ be a simplex element in $\Omega\subset\mathbb{R}^n$ where $n$ denotes its dimension. $K$ is unit w.r.t the euclidean metric field $\mathcal{M}$ when all its edges are equal to 1 in this metric. Mathematically speaking, if we define the list of edges of $K$ by $(\mathbf{e}_i)_{i=1,n(n+1)/2}$, then
+Let $K$ be a simplex element in $\Omega\subset\mathbb{R}^n$ where $n$ denotes its dimension. $K$ is unit with respect to metric field $\mathcal{M}$ when all its edges are equal to 1 in this metric. If we define the list of edges of $K$ by $(\mathbf{e}_i)_{i=1,n(n+1)/2}$, then
 
 $$\forall i=1,...,\frac{n(n+1)}{2}, \quad l_{\mathcal{M}}(\mathbf{e}_i)=1$$
 
@@ -28,13 +29,14 @@ $$|K|_{\mathcal{M}}=\frac{\sqrt{n+1}}{2^{n/2}n!} \text{ and } |K|_{\mathcal{I}_n
 
 ![Geometric representation of unit tetrahedrons](images/unit_element.png)
 
+> [!NOTE]
 > **Figure 2:** *Geometric representation of unit tetrahedrons in metric $\mathcal{I}_3$ (left) and an anisotropic metric $\mathcal{M}$ (right) (Loseille 2008)*
 
 The metric $\mathcal{M}$ for which $K$ is unit is unique and referred to as the *implied metric* of $K$. Conversely, when given a metric $\mathcal{M}$, the set of unit elements is not empty. Similarly, the unit notion can be extended to a mesh composed of simplexes with a continuous metric field $\mathcal{M}(\cdot)$. The mesh could then be said unit, if all its simplex elements are unit in $\mathcal{M}(\cdot)$. However, it is well known that the equilateral tetrahedron does not fill a subset $\Omega$ of $\mathbb{R}^3$. Following the proposition in the literature (Loseille 2011), the unit notion for simplex elements is relaxed to the quasi-unit element notion. $K$ is said to be **quasi-unit** if:
 
 $$\forall i=1,...,\frac{n(n+1)}{2}, \quad l_{\mathcal{M}}(\mathbf{e}_i)\in\left[\frac{1}{\sqrt{2}}, \sqrt{2}\right]$$
 
-Yet, some examples show that elements with a null volume (i.e. degenerated elements) can satisfy the above property. The authors propose a strategy to control the ratio between the volume $|K|_{\mathcal{M}}$ and the sum of the square length of the edges $l_{\mathcal{M}}^2(\mathbf{e}_i)$. This ratio defines the quality function $\mathcal{Q}_{\mathcal{M}}$ that measures the proximity of $K$ to the perfectly unit element in $\mathcal{M}$:
+Yet, some examples show that degenerated elements with null volume can satisfy the above property. The authors propose controlling the ratio between volume $|K|_{\mathcal{M}}$ and the sum of squared edge lengths $l_{\mathcal{M}}^2(\mathbf{e}_i)$. This ratio defines quality function $\mathcal{Q}_{\mathcal{M}}$:
 
 $$\mathcal{Q}_{\mathcal{M}}(K)=\frac{n(n!)^{2/n}}{(n+1)^{\frac{1-n}{n}}} \frac{|K|_{\mathcal{M}}^{\frac{2}{n}}}{\sum_{i=1}^{\frac{n(n+1)}{2}} l_{\mathcal{M}}^2(\mathbf{e}_i)} \in [0,1]$$
 
@@ -68,10 +70,11 @@ Conversely, from $\mathbf{M}=(\mathcal{M}(\mathbf{x}))_{\mathbf{x}\in\Omega}$ we
 
 $$\mathcal{N}(\mathbf{x})=\left(\frac{N}{\mathcal{C}(\mathbf{M})}\right)^{\frac{2}{3}}\mathcal{M}(\mathbf{x})$$
 
-In the context of error estimation, this notion enables convergence order study with respect to an increasing complexity $N$. Consequently, the complexity $\mathcal{C}(\mathbf{M})$ is also the continuous counterpart of the classical parameter $h$ used for uniform meshes while studying convergence.
+In error-estimation settings, this notion enables convergence-order studies with respect to increasing complexity $N$. Consequently, complexity $\mathcal{C}(\mathbf{M})$ is also the continuous counterpart of the classical parameter $h$ used for uniform meshes.
 
 ![Different unit elements](images/Embedded_metric.png)
 
+> [!NOTE]
 > **Figure 3:** *Different unit elements where only the density increases from left to right. (Loseille 2008)*
 
 ### Local decomposition of the metric field in $\mathbb{R}^n$
@@ -109,7 +112,7 @@ This decomposition is used in the Hessian scaling technique described in the sec
 
 ### Geometric invariants for unit elements
 
-Unit element's geometric properties can be connected to the linear algebra properties of metric tensors thanks to geometric invariants:
+Geometric properties of unit elements can be connected to linear-algebra properties of metric tensors through geometric invariants:
 
   * Invariant related to the Euclidean volume $|K|$:
     $$|K|=\frac{\sqrt{3}}{4}\text{det}(\mathcal{M}^{-\frac{1}{2}}) \text{ in 2D and } |K|=\frac{\sqrt{2}}{12}\text{det}(\mathcal{M}^{-\frac{1}{2}}) \text{ in 3D.}$$
@@ -125,7 +128,7 @@ Unit element's geometric properties can be connected to the linear algebra prope
 
 ### Element-implied metric computation
 
-Practically we compute the *implied metric* $\mathcal{M}_K$ by first computing $\mathcal{M}_K^{-\frac{1}{2}}$ from a two-step transformation. Let $\mathbf{\varphi}_0$ be the jacobian transformation matrix from $K_{\perp}$ to $K_{\Delta}$ and $\mathbf{\varphi}$ be the jacobian transformation matrix from $K_{\perp}$ to $K$.
+The *implied metric* $\mathcal{M}_K$ is computed from a two-step transformation. Let $\mathbf{\varphi}_0$ be the Jacobian transformation matrix from $K_{\perp}$ to $K_{\Delta}$ and $\mathbf{\varphi}$ be the Jacobian transformation matrix from $K_{\perp}$ to $K$.
 
 We use the triangle mapping definition to compute $\mathbf{\varphi}_0$ and $\mathbf{\varphi}$. The element-implied metric becomes:
 
@@ -133,6 +136,7 @@ $$\mathcal{M}_K = (\mathbf{\Phi}\mathbf{\Phi}^{\top})^{-1} = (\mathbf{\varphi}\m
 
 ![Relationship between the physical K and reference elements](images/Implied_metric_computation.png)
 
+> [!NOTE]
 > **Figure 4:** *Relationship between the physical $K$ and reference elements ($K_{\Delta}$ and $K_{\perp}$ ) for the calculation of the element-implied metric. (CAPLAN2020102915)*
 
 ### Numerical computation of lengths
