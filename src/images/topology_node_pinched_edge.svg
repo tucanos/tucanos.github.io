@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="700" height="360" viewBox="0 0 700 360">
+  <defs>
+    <style>
+      .edge { stroke: #0f172a; stroke-width: 2.8; fill: none; }
+      .shared { stroke: #dc2626; stroke-width: 7; stroke-linecap: round; }
+      .endpt { fill: #dc2626; }
+      .surf1 { fill: #93c5fd; fill-opacity: 0.42; }
+      .surf2 { fill: #fca5a5; fill-opacity: 0.42; }
+      .v { fill: #0f172a; }
+    </style>
+  </defs>
+
+  <!-- common edge AB -->
+  <!-- A=(220,270), B=(340,180) -->
+
+  <!-- surface 1 -->
+  <polygon points="220,270 340,180 180,105" class="surf1"/>
+  <polygon points="220,270 340,180 330,300" class="surf1"/>
+
+  <!-- surface 2 -->
+  <polygon points="220,270 340,180 395,105" class="surf2"/>
+  <polygon points="220,270 340,180 500,280" class="surf2"/>
+
+  <line x1="220" y1="270" x2="340" y2="180" class="edge"/>
+  <line x1="340" y1="180" x2="180" y2="105" class="edge"/>
+  <line x1="180" y1="105" x2="220" y2="270" class="edge"/>
+  <line x1="220" y1="270" x2="330" y2="300" class="edge"/>
+  <line x1="330" y1="300" x2="340" y2="180" class="edge"/>
+
+  <line x1="220" y1="270" x2="395" y2="105" class="edge"/>
+  <line x1="395" y1="105" x2="340" y2="180" class="edge"/>
+  <line x1="220" y1="270" x2="500" y2="280" class="edge"/>
+  <line x1="500" y1="280" x2="340" y2="180" class="edge"/>
+
+  <line x1="220" y1="270" x2="340" y2="180" class="shared"/>
+
+  <!-- highlight endpoints of the shared edge -->
+  <circle cx="220" cy="270" r="8" class="endpt"/>
+  <circle cx="340" cy="180" r="8" class="endpt"/>
+
+  <circle cx="180" cy="105" r="5" class="v"/>
+  <circle cx="330" cy="300" r="5" class="v"/>
+  <circle cx="395" cy="105" r="5" class="v"/>
+  <circle cx="500" cy="280" r="5" class="v"/>
+</svg>

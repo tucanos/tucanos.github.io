@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="700" height="420" viewBox="0 0 700 420">
+  <defs>
+    <style>
+      .edge { stroke: #0f172a; stroke-width: 2.4; fill: none; }
+      .shared { stroke: #dc2626; stroke-width: 7; stroke-linecap: round; }
+      .node { fill: #0f172a; }
+    </style>
+  </defs>
+
+  <!-- Shared edge AB -->
+  <!-- A=(220,300), B=(360,200) -->
+
+  <!-- Triangle 1: A-B-C1 -->
+  <polygon points="220,300 360,200 180,110" fill="#60a5fa" fill-opacity="0.45"/>
+  <line x1="220" y1="300" x2="360" y2="200" class="edge"/>
+  <line x1="360" y1="200" x2="180" y2="110" class="edge"/>
+  <line x1="180" y1="110" x2="220" y2="300" class="edge"/>
+
+  <!-- Triangle 2: A-B-C2 -->
+  <polygon points="220,300 360,200 470,320" fill="#60a5fa" fill-opacity="0.45"/>
+  <line x1="220" y1="300" x2="360" y2="200" class="edge"/>
+  <line x1="360" y1="200" x2="470" y2="320" class="edge"/>
+  <line x1="470" y1="320" x2="220" y2="300" class="edge"/>
+
+  <!-- Triangle 3: A-B-C3 -->
+  <polygon points="220,300 360,200 330,85" fill="#60a5fa" fill-opacity="0.45"/>
+  <line x1="220" y1="300" x2="360" y2="200" class="edge"/>
+  <line x1="360" y1="200" x2="330" y2="85" class="edge"/>
+  <line x1="330" y1="85" x2="220" y2="300" class="edge"/>
+
+  <!-- Highlighted shared non-manifold edge -->
+  <line x1="220" y1="300" x2="360" y2="200" class="shared"/>
+
+  <!-- Vertices -->
+  <circle cx="220" cy="300" r="5" class="node"/>
+  <circle cx="360" cy="200" r="5" class="node"/>
+  <circle cx="180" cy="110" r="5" class="node"/>
+  <circle cx="470" cy="320" r="5" class="node"/>
+  <circle cx="330" cy="85" r="5" class="node"/>
+</svg>

@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="700" height="360" viewBox="0 0 700 360">
+  <defs>
+    <style>
+      .edge { stroke: #111827; stroke-width: 3; fill: none; }
+      .edge-a { stroke: #2563eb; stroke-width: 6; fill: none; stroke-linecap: round; }
+      .edge-b { stroke: #db2777; stroke-width: 6; fill: none; stroke-linecap: round; }
+      .tri { fill: #94a3b8; fill-opacity: 0.28; }
+      .node { fill: #dc2626; }
+      .v { fill: #111827; }
+    </style>
+  </defs>
+
+  <polygon points="170,280 370,260 220,95" class="tri"/>
+
+  <line x1="170" y1="280" x2="370" y2="260" class="edge"/>
+  <line x1="370" y1="260" x2="220" y2="95" class="edge"/>
+  <line x1="220" y1="95" x2="170" y2="280" class="edge"/>
+
+  <line x1="170" y1="280" x2="370" y2="260" class="edge-a"/>
+  <line x1="220" y1="95" x2="170" y2="280" class="edge-b"/>
+
+  <circle cx="170" cy="280" r="8" class="node"/>
+  <circle cx="370" cy="260" r="5" class="v"/>
+  <circle cx="220" cy="95" r="5" class="v"/>
+</svg>

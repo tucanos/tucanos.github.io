@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="700" height="360" viewBox="0 0 700 360">
+  <defs>
+    <style>
+      .edge { stroke: #111827; stroke-width: 2.2; fill: none; }
+      .f1 { fill: #3b82f6; fill-opacity: 0.32; }
+      .f2 { fill: #f59e0b; fill-opacity: 0.32; }
+      .f3 { fill: #22c55e; fill-opacity: 0.32; }
+      .e1 { stroke: #2563eb; stroke-width: 5; fill: none; stroke-linecap: round; }
+      .e2 { stroke: #d97706; stroke-width: 5; fill: none; stroke-linecap: round; }
+      .e3 { stroke: #16a34a; stroke-width: 5; fill: none; stroke-linecap: round; }
+      .node { fill: #dc2626; }
+      .v { fill: #111827; }
+    </style>
+  </defs>
+
+  <polygon points="160,255 320,190 120,130" class="f1"/>
+  <polygon points="160,255 320,190 270,85" class="f2"/>
+  <polygon points="160,255 270,85 120,130" class="f3"/>
+
+  <line x1="160" y1="255" x2="320" y2="190" class="edge"/>
+  <line x1="320" y1="190" x2="120" y2="130" class="edge"/>
+  <line x1="120" y1="130" x2="160" y2="255" class="edge"/>
+  <line x1="320" y1="190" x2="270" y2="85" class="edge"/>
+  <line x1="270" y1="85" x2="160" y2="255" class="edge"/>
+  <line x1="270" y1="85" x2="120" y2="130" class="edge"/>
+
+  <line x1="160" y1="255" x2="320" y2="190" class="e1"/>
+  <line x1="120" y1="130" x2="160" y2="255" class="e2"/>
+  <line x1="270" y1="85" x2="160" y2="255" class="e3"/>
+
+  <circle cx="160" cy="255" r="8" class="node"/>
+  <circle cx="320" cy="190" r="5" class="v"/>
+  <circle cx="120" cy="130" r="5" class="v"/>
+  <circle cx="270" cy="85" r="5" class="v"/>
+</svg>

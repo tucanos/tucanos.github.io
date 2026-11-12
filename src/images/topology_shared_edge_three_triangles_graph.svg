@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="700" height="420" viewBox="0 0 700 420">
+  <defs>
+    <style>
+      .node { fill: #ffffff; stroke: #0f172a; stroke-width: 2; }
+      .line { stroke: #334155; stroke-width: 2; fill: none; }
+      .txt { font: 600 16px 'DejaVu Sans', sans-serif; fill: #111827; }
+      .sub { font: 500 13px 'DejaVu Sans', sans-serif; fill: #475569; }
+    </style>
+  </defs>
+
+  <!-- dim 2 nodes (three triangles, same face tag) -->
+  <rect x="90" y="70" width="160" height="62" rx="10" class="node"/>
+  <text x="110" y="98" class="txt">triangle 1</text>
+  <text x="110" y="118" class="sub">face tag = tf</text>
+
+  <rect x="270" y="70" width="160" height="62" rx="10" class="node"/>
+  <text x="290" y="98" class="txt">triangle 2</text>
+  <text x="290" y="118" class="sub">face tag = tf</text>
+
+  <rect x="450" y="70" width="160" height="62" rx="10" class="node"/>
+  <text x="470" y="98" class="txt">triangle 3</text>
+  <text x="470" y="118" class="sub">face tag = tf</text>
+
+  <!-- shared edge node -->
+  <rect x="240" y="250" width="220" height="72" rx="12" class="node"/>
+  <text x="275" y="282" class="txt">shared edge</text>
+  <text x="275" y="304" class="sub">non-manifold: 3 incident faces</text>
+
+  <!-- edges -->
+  <path d="M170 132 L320 250" class="line"/>
+  <path d="M350 132 L350 250" class="line"/>
+  <path d="M530 132 L380 250" class="line"/>
+</svg>
