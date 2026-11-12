@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="318" height="114" viewBox="0 0 84 30">
+  <g style="fill:none;stroke-linejoin:round;stroke-width:.3">
+    <!-- Left: only the removable triangle is red -->
+    <g transform="translate(0 0)">
+      <path d="M2 22 L8 25 L18 25 L25 19 L23 8" style="stroke:#84bd00"/>
+      <path d="M7 8 L2 14 L2 22" style="stroke:#84bd00"/>
+      <path d="M11 11 L2 22 M11 11 L8 25 M11 11 L18 25 M11 11 L25 19 M11 11 L7 8 M11 11 L2 14" style="stroke:#84bd00"/>
+      <path d="M7 8 Q15 15 23 8" style="stroke:#0072ce"/>
+      <path d="M23 8 L25 19 L11 11 L7 8" style="stroke:#84bd00"/>
+      <path d="M18 11.5 L7 8 M18 11.5 L23 8 M18 11.5 L25 19 M18 11.5 L11 11" style="stroke:#84bd00"/>
+      <path d="M7 8 L11 11 L18 11.5 Z" style="stroke:#e4002b"/>
+    </g>
+
+    <!-- Right: same configuration with only green edges -->
+    <g transform="translate(42 0)">
+      <path d="M2 22 L8 25 L18 25 L25 19 L23 8" style="stroke:#84bd00"/>
+      <path d="M7 8 L2 14 L2 22" style="stroke:#84bd00"/>
+      <path d="M11 11 L2 22 M11 11 L8 25 M11 11 L18 25 M11 11 L25 19 M11 11 L7 8 M11 11 L2 14" style="stroke:#84bd00"/>
+      <path d="M7 8 Q15 15 23 8" style="stroke:#0072ce"/>
+      <path d="M23 8 L25 19 L11 11 L7 8" style="stroke:#84bd00"/>
+      <path d="M18 11.5 L23 8 M18 11.5 L25 19 M18 11.5 L11 11" style="stroke:#84bd00"/>
+    </g>
+  </g>
+</svg>

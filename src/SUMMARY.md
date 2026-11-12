@@ -26,17 +26,16 @@
 - [Mesh adaptation](adaptation.md)
   - [Topology](topology.md)
   - [Geometry](geometry.md)
-
-  <!-- - [Metric](metric.md)
+  - [Metric](metric.md)
     - [Riemannian metric](riemannian_metric.md)
     - [Metric operations](metric_operations.md)
     - [Optimal metric](optimal_metric.md)
     - [Curvature metric](curvature_metric.md)
-  - [Remeshing](remesher.md)
+  <!-- - [Remeshing](remesher.md)
     - [Cavities](cavities.md)
     - [Remeshing loop](remeshing_loop.md)
-    - [Parallel remeshing](parallel_remeshing.md)
-   -->
+    - [Parallel remeshing](parallel_remeshing.md) -->
+  
 
 <!-- - [Benchmarks](benchmarks.md)
   - [Square linear](benchmarks/square_linear/README.md)

@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="635" height="114" viewBox="0 0 168 30">
+  <g style="fill:none;stroke-linejoin:round;stroke-width:.3">
+    <!-- panel 1: green mesh, red boundary triangle, concave blue geometry -->
+    <g transform="translate(0 0)">
+      <path d="M2 22 L8 25 L18 25 L25 19 L23 8 L7 8 L2 14 Z" style="stroke:#84bd00"/>
+      <path d="M11 11 L2 22 M11 11 L8 25 M11 11 L18 25 M11 11 L25 19 M11 11 L7 8 M11 11 L2 14" style="stroke:#84bd00"/>
+      <path d="M7 8 Q15 15 23 8" style="stroke:#0072ce"/>
+      <path d="M7 8 L23 8 L11 11 Z" style="stroke:#e4002b"/>
+    </g>
+
+    <!-- panel 2: midpoint projection crosses one edge of the red triangle -->
+    <g transform="translate(42 0)">
+      <path d="M2 22 L8 25 L18 25 L25 19 L23 8 L7 8 L2 14 Z" style="stroke:#84bd00"/>
+      <path d="M11 11 L2 22 M11 11 L8 25 M11 11 L18 25 M11 11 L25 19 M11 11 L7 8 M11 11 L2 14" style="stroke:#84bd00"/>
+      <path d="M7 8 Q15 15 23 8" style="stroke:#0072ce"/>
+      <path d="M7 8 L23 8 L11 11 Z" style="stroke:#e4002b"/>
+      <path d="M11 11 L23 8 L25 19 Z" style="stroke:#84bd00"/>
+      <path d="M11 11 L23 8" style="stroke:#ff8c00"/>
+      <circle cx="15" cy="8" r="0.55" style="stroke:#e4002b"/>
+      <circle cx="18" cy="11.5" r="0.55" style="stroke:#0072ce"/>
+      <path d="M15 8 L18 11.5" style="stroke:#e4002b;stroke-dasharray:.8 .8"/>
+    </g>
+
+    <!-- panel 3: cavity made of the two triangles touching the orange edge -->
+    <g transform="translate(84 0)">
+      <path d="M2 22 L8 25 L18 25 L25 19 L23 8 L7 8 L2 14 Z" style="stroke:#84bd00"/>
+      <path d="M11 11 L2 22 M11 11 L8 25 M11 11 L18 25 M11 11 L25 19 M11 11 L7 8 M11 11 L2 14" style="stroke:#84bd00"/>
+      <path d="M7 8 Q15 15 23 8" style="stroke:#0072ce"/>
+      <path d="M23 8 L25 19 L11 11 L7 8" style="stroke:#e4002b"/>
+      <circle cx="18" cy="11.5" r="0.55" style="stroke:#0072ce"/>
+    </g>
+
+    <!-- panel 4: same cavity with red links from projected point to all red-boundary vertices -->
+    <g transform="translate(126 0)">
+      <path d="M2 22 L8 25 L18 25 L25 19 L23 8" style="stroke:#84bd00"/>
+      <path d="M7 8 L2 14 L2 22" style="stroke:#84bd00"/>
+      <path d="M11 11 L2 22 M11 11 L8 25 M11 11 L18 25 M11 11 L25 19 M11 11 L7 8 M11 11 L2 14" style="stroke:#84bd00"/>
+      <path d="M7 8 Q15 15 23 8" style="stroke:#0072ce"/>
+      <path d="M23 8 L25 19 L11 11 L7 8" style="stroke:#e4002b"/>
+      <path d="M18 11.5 L7 8 M18 11.5 L23 8 M18 11.5 L25 19 M18 11.5 L11 11" style="stroke:#e4002b"/>
+      <circle cx="18" cy="11.5" r="0.55" style="stroke:#0072ce"/>
+    </g>
+  </g>
+</svg>

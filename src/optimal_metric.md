@@ -1,6 +1,6 @@
 # Optimal metric definition
 ## Feature based adaptation
-Feature-based in metric-based adaptation consists in applying the **multiscale error estimator** in $L^p$-norm to a scalar function in the domain. This function is denoted as a sensor, or a feature, on which the mesh is adapted to reduce the global interpolation error on this particular sensor, while automatically capturing all scales. In CFD computations, the Mach number is typically used because it captures features of interest such as boundary layers, shocks, and wakes.
+Feature-based metric adaptation consists in applying the **multiscale error estimator** in $L^p$ norm to a scalar function in the domain. This function is denoted as a sensor (or feature), and the mesh is adapted to reduce global interpolation error on this feature while capturing multiple scales. In CFD computations, the Mach number is often used because it captures boundary layers, shocks, and wakes.
 
 Let $\mathcal{T}_h$ be a simplex mesh composed of simplex elements $K$. Let $E_{L^p}(\mathcal{T}_h)$ be an error model in $L^p$-norm. The optimal mesh $\mathcal{T}_h^{opt}$ is given by the following minimization problem with constraint $\mathcal{C}(\mathcal{T}_h)=N$:
 
@@ -16,13 +16,13 @@ $$
 
 ## Multiscale error estimator in $L^p$-norm and feature-based mesh adaptation
 
-Let $w=f(\mathbf{u})$ be a twice derivable smooth function of the state $\mathbf{u}$. Let $\mathcal{T}_h$ be a simplex mesh on which the function $w$ is piecewise linear approximated on elements $K$. The piecewise approximation is defined by the linear interpolate $\Pi_h w$ on the mesh $\mathcal{T}_h$. Then, the global interpolation error of $w$ in $\mathcal{T}_h$ is defined by the $L^p$-norm of its local interpolation errors, namely:
+Let $w=f(\mathbf{u})$ be a twice-differentiable smooth function of state $\mathbf{u}$. Let $\mathcal{T}_h$ be a simplex mesh on which $w$ is approximated piecewise linearly on elements $K$. The approximation is defined by linear interpolant $\Pi_h w$ on mesh $\mathcal{T}_h$. Then the global interpolation error of $w$ in $\mathcal{T}_h$ is the $L^p$ norm of local interpolation errors:
 
 $$
 E_{L^p}(\mathcal{T}_h) = \left(\int_{\Omega}|w-\Pi_hw|^p d\Omega\right)^{\frac{1}{p}}.
 $$
 
-In (Loseille 2011), the authors prove the existence and unicity of the continuous linear interpolate $\pi_{\mathcal{M}}w$ that defines the continuous linear interpolation error related to the continuous mesh $(\mathcal{M}(\mathbf{x}))_{\mathbf{x}\in\Omega}$. From corollary 3.4 of (Loseille 2011), the following continuous linear interpolation estimate holds in 2D and 3D:
+In Loseille (2011), existence and uniqueness of continuous linear interpolant $\pi_{\mathcal{M}}w$ are established for continuous mesh $(\mathcal{M}(\mathbf{x}))_{\mathbf{x}\in\Omega}$. From Corollary 3.4, the following continuous interpolation estimate holds in 2D and 3D:
 
 $$
 \begin{aligned}
@@ -48,4 +48,10 @@ $$
 The proofs are given in (Loseille 2011b).
 
 ## Hessian computation
-Tucanos features two methods to compute the Hessian of a given scalar quantity. The first one uses a simple Least-Squares (LS) formulation that is performed twice. The resolution of the Least-squares is carried using a QR decomposition. The second method uses Clément’s L2-projection local operator (L2proj) (Clement, 1975) similarly to the Hessian recovery method presented in (Alauzet, 2021). These methods use the values at the vertices of the mesh, obtained via a volumetric interpolation of the values from the elements to the nodes. This interpolation is performed using the Tucanos library.
+
+In practice, two Hessian-recovery strategies are used in the lib:
+
+- a Least-Squares (LS) approach applied twice (gradient then Hessian), with local systems solved by QR decomposition,
+- a Clément-type local $L^2$ projection approach (`L2proj`) (Clement, 1975), similar to the recovery strategy described in Alauzet (2021).
+
+Both approaches operate on vertex values. When the source field is element-centered, a volumetric interpolation to mesh vertices is performed first.
