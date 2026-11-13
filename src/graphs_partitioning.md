@@ -2,7 +2,7 @@
 
 `tmesh` uses compressed sparse row (CSR) graphs for connectivities that cannot be stored
 as a fixed-width array: vertex-to-vertex, vertex-to-element, and element-to-element
-adjacency. The same structure supports reordering and mesh partitioning.
+adjacency. The same structure supports reordering and partitioning.
 
 ## CSR graphs
 

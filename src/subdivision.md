@@ -1,6 +1,6 @@
 # Subdivision of canonical elements
 
-When input cells are not simplices, `tmesh` converts them to simplices using deterministic rules based on *How to Subdivide Pyramids, Prisms and Hexahedra into Tetrahedra.*, Julien Dompierre, Paul Labbe, Marie-Gabrielle Vallet, Ricardo Camarero.
+When input cells are not simplices, `tmesh` converts them to simplices using deterministic rules based on [*How to Subdivide Pyramids, Prisms and Hexahedra into Tetrahedra.*, Julien Dompierre, Paul Labbe, Marie-Gabrielle Vallet, Ricardo Camarero.](https://www.researchgate.net/publication/221561839_How_to_Subdivide_Pyramids_Prisms_and_Hexahedra_into_Tetrahedra)
 
 Implemented conversions:
 
@@ -12,8 +12,10 @@ Implemented conversions:
 Internal diagonals are selected from local vertex ordering and edge comparisons so neighboring cells choose compatible splits.
 
 > [!WARNING]
->
 > This subdivision path is implemented for **linear** canonical elements only. High-order (quadratic or above) non-simplex elements are not subdivided by these routines.
+
+> [!WARNING]
+> Elements with non-planar quadrangle faces may produce invalid tetrahedra after subdivision.
 
 ## Example: create a mesh from one hexahedron and one pyramid
 

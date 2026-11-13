@@ -85,8 +85,3 @@ ftags = np.array([10, 10, 10, 10, 10], dtype=np.int16)
 msh = Mesh2d(coords, elems, etags, faces, ftags)
 assert msh.n_elems() == 3
 ```
-
-## Partitioning
-
-Partitioning, CSR graphs, and reordering are described in
-[Graphs and partitioning](graphs_partitioning.md).

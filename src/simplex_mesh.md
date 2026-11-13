@@ -5,8 +5,7 @@ This page is kept for backward compatibility.
 The mesh documentation has been refactored to match the chapter structure in the table of contents:
 
 - [Mesh](mesh.md)
-- [Element types](element_types.md)
-- [Linear simplices](simplices.md)
+- [Element types and simplices](simplices.md)
 - [Subdivision of canonical elements](subdivision.md)
 - [Quadratic simplices](quadratic.md)
 - [Tags](tags.md)
