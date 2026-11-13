@@ -2,7 +2,7 @@
 
 ## Riemannian metric space
 
-A Riemannian metric space $(\mathbb{R}^d, \mathcal{M}(\mathbf{x}))$ is defined by a continuous metric field $\mathcal{M}(\cdot)$ in $\mathbb{R}^d$. The **length** of an edge $\mathbf{ab}$ is computed using the path $\gamma(t)=\mathbf{a}+t\mathbf{ab}$ where $t\in[0,1]$:
+A Riemannian metric space $(\mathbb{R}^n, \mathcal{M}(\mathbf{x}))$ is defined by a continuous metric field $\mathcal{M}(\cdot)$ in $\mathbb{R}^n$. The **length** of an edge $\mathbf{ab}$ is computed using the path $\gamma(t)=\mathbf{a}+t\mathbf{ab}$ where $t\in[0,1]$:
 
 $$l_\mathcal{M}(\mathbf{ab})=\int_0^1\|\gamma'(t)\|\,dt=\int_0^1\sqrt{\mathbf{ab}^{\top}\mathcal{M}(\mathbf{a}+t\mathbf{ab})\mathbf{ab}}\,dt$$
 
@@ -13,9 +13,9 @@ The figure below shows length computation in different metric spaces. We see tha
 > [!NOTE]
 > **Figure 1:** *Iso-values of the distance w.r.t canonical Euclidean space (left), euclidean space defined by $\mathcal{M}$ and Riemannian space defined by $\mathcal{M}(\cdot)$ (Loseille 2008)*
 
-Given a bounded subset $K$ of $\mathbb{R}^d$, the volume $|K|_{\mathcal{M}(\cdot)}$ is given by:
+Given a bounded subset $K$ of $\mathbb{R}^n$, the volume $|K|_{\mathcal{M}(\cdot)}$ is given by:
 
-$$|K|_{\mathcal{M}(\cdot)}=\int_K\sqrt{\text{det}\mathcal{M(\mathbf{x})}}d\mathbf{x}$$
+$$|K|_{\mathcal{M}(\cdot)}=\int_K\sqrt{\text{det}\mathcal{M}(\mathbf{x})}\,d\mathbf{x}$$
 
 ### Unit elements and meshes
 
@@ -54,9 +54,9 @@ We define the complexity $\mathcal{C}$ of metric field $(\mathcal{M}(\mathbf{x})
 
 $$\mathcal{C}(\mathcal{M}(\cdot))=\int_{\Omega}\sqrt{\text{det}(\mathcal{M}(\mathbf{x}))}d\mathbf{x}$$
 
-This real value parameter is useful to quantify the global level of accuracy of $(\mathcal{M}(\mathbf{x}))_{\mathbf{x}\in\Omega}$. It can also be interpreted as the continuous counterpart of the number of vertices of a discrete mesh. There is a direct relationship between the prescribed metric complexity and the number of elements of the generated mesh. Let $\mathcal{T}_h$ be a simplex mesh of $\Omega\subset\mathbb{R}^d$ composed of simplex elements $K$. We can describe this mesh with the metric $\mathcal{M}(\mathbf{x})_{\mathbf{x}\in\Omega}$ in which $\mathcal{T}_h$ is unit. Then, the continuous mesh complexity and the mesh number of element $N_{elts}$ are linked using the unit element properties:
+This real value parameter is useful to quantify the global level of accuracy of $(\mathcal{M}(\mathbf{x}))_{\mathbf{x}\in\Omega}$. It can also be interpreted as the continuous counterpart of the number of vertices of a discrete mesh. There is a direct relationship between the prescribed metric complexity and the number of elements of the generated mesh. Let $\mathcal{T}_h$ be a simplex mesh of $\Omega\subset\mathbb{R}^n$ composed of simplex elements $K$. We can describe this mesh with the metric $\mathcal{M}(\mathbf{x})_{\mathbf{x}\in\Omega}$ in which $\mathcal{T}_h$ is unit. Then, the continuous mesh complexity and the mesh number of element $N_{elts}$ are linked using the unit element properties:
 
-$$\mathcal{C} \approx \sum_{K} \sqrt{\text{det}\mathcal{M}} |K| \approx \sum_{K} \frac{\sqrt{d+1}}{2^{d/2}d!} = \frac{\sqrt{d+1}}{2^{d/2}d!} N_{elts}$$
+$$\mathcal{C} \approx \sum_{K} \sqrt{\text{det}\mathcal{M}} |K| \approx \sum_{K} \frac{\sqrt{n+1}}{2^{n/2}n!} = \frac{\sqrt{n+1}}{2^{n/2}n!} N_{elts}$$
 
 After remeshing, this relation is not exact because most of the elements are not perfectly unit.
 
@@ -68,7 +68,7 @@ $$\forall \mathbf{x}\in\Omega, \quad \mathcal{N}(\mathbf{x})=c\mathcal{M}(\mathb
 
 Conversely, from $\mathbf{M}=(\mathcal{M}(\mathbf{x}))_{\mathbf{x}\in\Omega}$ we can deduce $\mathbf{N}=(\mathcal{N}(\mathbf{x}))_{\mathbf{x}\in\Omega}$ of complexity $N$ having the same anisotropic properties (anisotropic orientations and ratios) by considering:
 
-$$\mathcal{N}(\mathbf{x})=\left(\frac{N}{\mathcal{C}(\mathbf{M})}\right)^{\frac{2}{3}}\mathcal{M}(\mathbf{x})$$
+$$\mathcal{N}(\mathbf{x})=\left(\frac{N}{\mathcal{C}(\mathbf{M})}\right)^{\frac{2}{n}}\mathcal{M}(\mathbf{x})$$
 
 In error-estimation settings, this notion enables convergence-order studies with respect to increasing complexity $N$. Consequently, complexity $\mathcal{C}(\mathbf{M})$ is also the continuous counterpart of the classical parameter $h$ used for uniform meshes.
 
@@ -83,8 +83,8 @@ Let $\mathcal{M}(\mathbf{x})$ be a metric defined locally on point $\mathbf{x}$ 
 
 $$
 \begin{aligned}
-    \mathcal{M}(\mathbf{x}) &= \mathcal{R}^{\top}(\mathbf{x})\begin{pmatrix} \lambda_1(\mathbf{x}) & & \\ & \ddots & \\ & & \lambda_d(\mathbf{x}) \end{pmatrix} \mathcal{R}(\mathbf{x}) \\
-    &= \mathcal{R}^{\top}(\mathbf{x})\begin{pmatrix} h_1^{-2}(\mathbf{x}) & & \\ & \ddots & \\ & & h_n^{-2}(\mathbf{x}) \end{pmatrix} \mathcal{R}(\mathbf{x})
+    \mathcal{M}(\mathbf{x}) &= \mathcal{R}(\mathbf{x})\begin{pmatrix} \lambda_1(\mathbf{x}) & & \\ & \ddots & \\ & & \lambda_n(\mathbf{x}) \end{pmatrix} \mathcal{R}^{\top}(\mathbf{x}) \\
+    &= \mathcal{R}(\mathbf{x})\begin{pmatrix} h_1^{-2}(\mathbf{x}) & & \\ & \ddots & \\ & & h_n^{-2}(\mathbf{x}) \end{pmatrix} \mathcal{R}^{\top}(\mathbf{x})
 \end{aligned}
 $$
 
@@ -105,7 +105,7 @@ $$
 Locally, the metric writes:
 
 $$
-\mathcal{M}(\mathbf{x}) = d^{\frac{2}{n}}(\mathbf{x})\mathcal{R}^{\top}(\mathbf{x})\begin{pmatrix} r_1^{-2}(\mathbf{x}) & & \\ & \ddots & \\ & & r_n^{-2}(\mathbf{x}) \end{pmatrix} \mathcal{R}(\mathbf{x})
+\mathcal{M}(\mathbf{x}) = d^{\frac{2}{n}}(\mathbf{x})\mathcal{R}(\mathbf{x})\begin{pmatrix} r_1^{-2}(\mathbf{x}) & & \\ & \ddots & \\ & & r_n^{-2}(\mathbf{x}) \end{pmatrix} \mathcal{R}^{\top}(\mathbf{x})
 $$
 
 This decomposition is used in the Hessian scaling technique described in the section on Hessian Scaling.
