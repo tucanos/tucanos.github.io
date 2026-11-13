@@ -143,6 +143,65 @@ writer.export("mesh.vtu").unwrap();
 
 Surface meshes can also be read from STL files with `tmesh::mesh::read_stl`. The
 reader merges vertices with identical bit patterns and tags all triangles with `1`; it
-does not create boundary faces or fix the facet orientation. See
-[Mesh generation](mesh_generation.md#reading-stl-surfaces) for the details and for an
-example.
+does not create boundary faces or fix the facet orientation.
+
+`read_stl::<M>(file_name)` reads an STL file into a 3D triangle mesh, typically
+`BoundaryMesh3d`. Both ASCII and binary STL are handled by the `stl_io` library.
+
+The returned mesh:
+
+- converts the single-precision STL coordinates to `f64`,
+- merges vertices whose three coordinates are bit-identical (the `stl_io` reader
+  identifies vertices by the bit pattern of their `f32` coordinates, so `0.0` and
+  `-0.0` are distinct),
+- tags every triangle with `1`,
+- has **no explicit face array**.
+
+Because the face array is empty, `Mesh::check()` only passes when the surface is
+closed: every edge is then shared by two triangles, so there is no boundary face to
+tag. For an open surface, call `Mesh::fix()` to create and orient the boundary edges
+before using the mesh with routines that require valid tags.
+
+No orientation fix is applied to the triangles. Run `Mesh::fix()` (or check the
+orientation of your file) if the facets may be inconsistently oriented.
+
+```rust
+# extern crate tmesh;
+use std::io::Write;
+use tmesh::mesh::{BoundaryMesh3d, Mesh, read_stl};
+
+let stl = "solid one_triangle\n\
+facet normal 0 0 1\n\
+outer loop\n\
+vertex 0 0 0\n\
+vertex 1 0 0\n\
+vertex 0 1 0\n\
+endloop\n\
+endfacet\n\
+endsolid one_triangle\n";
+
+let path = std::env::temp_dir().join("one_triangle.stl");
+std::fs::File::create(&path)
+	.unwrap()
+	.write_all(stl.as_bytes())
+	.unwrap();
+
+let mut surface = read_stl::<BoundaryMesh3d>(path.to_str().unwrap()).unwrap();
+assert_eq!(surface.n_verts(), 3);
+assert_eq!(surface.n_elems(), 1);
+assert!(surface.etags().all(|t| t == 1));
+
+// Add and orient the boundary edges.
+surface.fix().unwrap();
+```
+
+> [!TIP]
+> **STL input error and panic messages**
+>
+> | Message | Meaning / action |
+> | --- | --- |
+> | ``called `Result::unwrap()` on an `Err` value: Os { code: 2, kind: NotFound, ... }`` | `read_stl` panics when the file cannot be opened. Check the path. |
+> | ``called `Result::unwrap()` on an `Err` value: ...`` (STL parse error) | `read_stl` panics when `stl_io` cannot parse the file. The `Debug` form of the `stl_io` error indicates the failing record; check that the file is a valid ASCII or binary STL. |
+>
+> `read_stl` never returns an `Err`: both the file opening and the parsing are
+> unwrapped, so all I/O and format failures are panics.

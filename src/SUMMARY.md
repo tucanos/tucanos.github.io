@@ -9,7 +9,7 @@
   - [Simplices](simplices.md)
     - [Subdivision of canonical elements](subdivision.md)
     - [Quadratic simplices](quadratic.md)
-  - [Mesh generation](mesh_generation.md)
+  - [Generating simple meshes](mesh_generation.md)
   - [Tags](tags.md)
   - [Adjacencies](adjacencies.md)
   - [Graphs and partitioning](graphs_partitioning.md)
@@ -31,10 +31,10 @@
     - [Metric operations](metric_operations.md)
     - [Optimal metric](optimal_metric.md)
     - [Curvature metric](curvature_metric.md)
-  <!-- - [Remeshing](remesher.md)
+  - [Remeshing](remesher.md)
     - [Cavities](cavities.md)
     - [Remeshing loop](remeshing_loop.md)
-    - [Parallel remeshing](parallel_remeshing.md) -->
+    - [Parallel remeshing](parallel_remeshing.md)
   
 
 <!-- - [Benchmarks](benchmarks.md)

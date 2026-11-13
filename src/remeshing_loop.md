@@ -21,7 +21,7 @@ This ordering is important: collapse removes clearly over-refined edges first, s
 
 All operators use topology tags and parent relations (from `MeshTopology`) to prevent invalid geometric moves:
 
-- edge tags are inferred from vertex tags, tagged faces, and parent sets (`edge_tag`),
+- edge tags are inferred from vertex tags, tagged faces, and parent sets (`edge_tag`), as detailed in [Vertex tags](topology.md#vertex-tags),
 - candidate reconstructions are rejected when parent/child compatibility is violated (`topo.parent(...)` checks),
 - additional cavity-level topological checks prevent element/face pinching and duplicate entities (`FilledCavity::check_topo`).
 

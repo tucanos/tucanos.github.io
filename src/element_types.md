@@ -4,11 +4,11 @@
 
 ## Linear simplices
 
-| Element | Dim. | Nodes | Typical use |
-| --- | --- | --- | --- |
-| `Edge` | 1 | 2 | 1D mesh, boundary/interface edges |
-| `Triangle` | 2 | 3 | 2D mesh, boundary/interface triangles |
-| `Tetrahedron` | 3 | 4 | 3D volume mesh |
+| Element | Dim. | Nodes | 
+| --- | --- | --- | 
+| `Edge` | 1 | 2 | 
+| `Triangle` | 2 | 3 | 
+| `Tetrahedron` | 3 | 4 | 
 
 The faces of an element are also simplices: edges for a triangle, triangles for a tetrahedron, and nodes for an edge.
 
@@ -33,7 +33,7 @@ See [Quadratic simplices](quadratic.md) for the local node ordering.
 
 Aliases mirror the linear case: `QuadraticMesh2d`, `QuadraticMesh3d`, `QuadraticBoundaryMesh2d`, and `QuadraticBoundaryMesh3d`.
 
-## Canonical volume cells
+## Canonical cells
 
 Non-simplex cells can be inserted into a simplex mesh; they are subdivided deterministically into simplices:
 
@@ -46,8 +46,6 @@ Non-simplex cells can be inserted into a simplex mesh; they are subdivided deter
 
 See [Subdivision of canonical elements](subdivision.md) for the exact rules and the limitation to linear cells.
 
-## Working with elements
+> [!WARNING]
+> Elements with non-planar quadrangle faces may produce invalid tetrahedra after subdivision.
 
-- [Simplices](simplices.md): topological versus geometric simplices, local numbering, and geometric operations.
-- [Tags](tags.md): element and face tags.
-- [Adjacencies](adjacencies.md): connectivities derived from element and face arrays.

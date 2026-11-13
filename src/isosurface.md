@@ -56,7 +56,7 @@ use tmesh::mesh::{BoundaryMesh2d, Mesh, Mesh2d, rectangle_mesh};
 let msh = rectangle_mesh::<Mesh2d>(1.0, 20, 1.0, 20);
 let f: Vec<f64> = msh.verts().map(|x| x[0] - 0.5).collect();
 
-let (split, _split_edges): (Mesh2d, _) = msh.split_isosurface(&f).unwrap();
+let (split, _split_edges): (Mesh2d, _) = msh.split_isosurface(&f);
 
 // Positive and negative regions.
 assert!(split.etags().all(|t| t == 1 || t == -1));

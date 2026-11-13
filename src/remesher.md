@@ -9,3 +9,5 @@ The idea is to perform a series of local modification on an input mesh to have
 - element qualities as high as possible
 
 In order to ensure the validity of the final mesh, validity is enforced at each step.
+
+The error messages raised by `Remesher::check()`, by remesher mutations, and by the parallel remesher are listed in [Validity](validity.md#remesher-consistency-errors).
