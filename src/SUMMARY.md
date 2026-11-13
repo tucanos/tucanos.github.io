@@ -5,8 +5,8 @@
 # User Guide
 
 - [Mesh](mesh.md)
-  - [Element types](element_types.md)
-  - [Simplices](simplices.md)
+  - [Elements](elements.md)
+    - [Simplices](simplices.md)
     - [Subdivision of canonical elements](subdivision.md)
     - [Quadratic simplices](quadratic.md)
   - [Generating simple meshes](mesh_generation.md)
@@ -18,7 +18,8 @@
   - [Spatial indices](spatial_indices.md)
   - [Non-manifold meshes](non_manifold.md)
   - [Curvature](curvature.md)
-  - [Mesh quality and integration](mesh_quality.md)
+  - [Mesh quality](mesh_quality.md)
+  - [Integration](integration.md)
   - [Validity](validity.md)
   - [Mesh I/O](io.md)
   - [Extrusion](extrusion.md)

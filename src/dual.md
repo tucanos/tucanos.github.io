@@ -2,8 +2,6 @@
 
 This page documents the assumptions and algorithms used to build vertex-centered dual meshes in `tucanos` (implemented in `tmesh`).
 
-Reference code baseline: tucanos commit `91a4930c2836a67b3c8101d3af80ecf9cf0be291`.
-
 ## Goal
 
 Given a primal simplex mesh:

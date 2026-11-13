@@ -1,7 +1,11 @@
 # Simplices
 
+`tmesh` stores elements as topological simplices. The mesh type is parameterized by
+an ambient dimension $D$ and an element type `C` implementing the `Simplex` trait,
+e.g. `GenericMesh<2, Triangle<usize>>`.
 
-## Topological versus geometric simplex
+
+## Topological and geometric simplices
 
 `tmesh` uses two complementary abstractions:
 
@@ -25,9 +29,9 @@ The link between both is explicit in the associated types:
 
 This separation is what allows, for example, a triangle topology to be embedded in different ambient spaces while keeping the same topological conventions.
 
-## Core assumptions from `Simplex`
+### Core assumptions
 
-A simplex is represented by an ordered tuple of vertex indices:
+A simplex is represented by an ordered tuple of vertex indices, e.g.:
 
 - edge: $(v_0,v_1)$,
 - triangle: $(v_0,v_1,v_2)$,
@@ -42,7 +46,7 @@ The key face convention is:
 
 This is enforced both topologically (`Simplex::face(i)`) and geometrically (`GSimplex::face(i)`).
 
-## Index storage assumptions (`Idx`)
+### Index storage (`Idx`)
 
 Simplex indices are stored through the `Idx` abstraction. In `tmesh`, supported index types are:
 
@@ -55,21 +59,7 @@ So indices can be stored using signed or unsigned integers, with 32-bit support 
 
 In all cases, indices must be convertible to/from `usize` for internal connectivity operations.
 
-## Edge local numbering
-
-For an edge $(v_0,v_1)$:
-
-- the unique edge entity is $(v_0,v_1)$,
-- faces are 0D nodes (endpoints),
-- opposite-vertex convention gives:
-	- face 0: $(v_1)$,
-	- face 1: $(v_0)$.
-
-So face $i$ excludes vertex $v_i$ exactly, just as for higher-order simplices.
-
-Orientation is given by endpoint order; swapping endpoints flips orientation.
-
-## Orientation assumptions
+### Orientation
 
 Orientation is encoded by vertex order.
 
@@ -80,7 +70,49 @@ Swapping two vertices flips orientation. In the trait implementation, `invert()`
 
 In mesh workflows, valid elements are expected to have positive measure after orientation fixes.
 
-## Triangle local numbering
+
+### Equality and canonicalization assumptions
+
+Two different notions are used:
+
+- `is_same`: orientation-aware simplex equality under valid local permutations,
+- `sorted`: canonical index ordering for hashing/lookup (orientation is not preserved by sorting).
+
+In practice:
+
+- use orientation-preserving checks when geometric sign matters,
+- use sorted forms for connectivity maps and deduplication keys.
+
+## Linear simplices
+
+| Element | Dim. | Nodes |
+| --- | --- | --- |
+| `Edge` | 1 | 2 |
+| `Triangle` | 2 | 3 |
+| `Tetrahedron` | 3 | 4 |
+
+The faces of an element are also simplices: edges for a triangle, triangles for a
+tetrahedron, and nodes for an edge.
+
+Common aliases:
+
+- `Mesh2d` = `GenericMesh<2, Triangle<usize>>`,
+- `Mesh3d` = `GenericMesh<3, Tetrahedron<usize>>`,
+- `BoundaryMesh2d` = `GenericMesh<2, Edge<usize>>`,
+- `BoundaryMesh3d` = `GenericMesh<3, Triangle<usize>>`.
+
+
+### Linear edge local numbering
+
+For an edge $(v_0,v_1)$:
+
+- the unique edge entity is $(v_0,v_1)$,
+- faces are 0D nodes (endpoints),
+- opposite-vertex convention gives:
+	- face 0: $(v_1)$,
+	- face 1: $(v_0)$.
+
+### Linear triangle local numbering
 
 For a triangle $(v_0,v_1,v_2)$:
 
@@ -90,9 +122,7 @@ For a triangle $(v_0,v_1,v_2)$:
 	- face 1: $(v_2,v_0)$,
 	- face 2: $(v_0,v_1)$.
 
-So face $i$ excludes vertex $v_i$ exactly.
-
-## Tetrahedron local numbering
+### Linear tetrahedron local numbering
 
 For a tetrahedron $(v_0,v_1,v_2,v_3)$:
 
@@ -106,16 +136,3 @@ For a tetrahedron $(v_0,v_1,v_2,v_3)$:
 	- face 3: $(v_0,v_2,v_1)$.
 
 The vertex order inside each face is chosen consistently with the parent-tetra orientation convention used in `tmesh`.
-
-## Equality and canonicalization assumptions
-
-Two different notions are used:
-
-- `is_same`: orientation-aware simplex equality under valid local permutations,
-- `sorted`: canonical index ordering for hashing/lookup (orientation is not preserved by sorting).
-
-In practice:
-
-- use orientation-preserving checks when geometric sign matters,
-- use sorted forms for connectivity maps and deduplication keys.
-

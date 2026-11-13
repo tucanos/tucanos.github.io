@@ -1,20 +1,19 @@
 # Quadratic simplices
 
-`tmesh` supports second-order simplex elements:
+`tmesh` supports second-order simplex elements. These elements have corner nodes plus one node per topological edge.
 
-- quadratic edge (3 nodes),
-- quadratic triangle (6 nodes),
-- quadratic tetrahedron (10 nodes).
+| Element | Nodes |
+| --- | --- |
+| `QuadraticEdge` | 3 |
+| `QuadraticTriangle` | 6 |
+| `QuadraticTetrahedron` | 10 |
 
-## High-order node layout (quadratic edge/triangle/tetrahedron)
+Aliases mirror the linear case: `QuadraticMesh2d`, `QuadraticMesh3d`,
+`QuadraticBoundaryMesh2d`, and `QuadraticBoundaryMesh3d`.
 
-For quadratic simplices in `tmesh`, node sets are split into:
+## Node layout
 
-- corner nodes (the linear simplex vertices),
-- edge nodes (one node per topological edge),
-- no face-interior or volume-interior nodes at order 2.
-
-### Quadratic edge (3 nodes)
+### Quadratic edge
 
 Local node ordering is:
 
@@ -24,7 +23,7 @@ Local node ordering is:
 
 So a quadratic edge has 2 corner nodes + 1 edge node.
 
-### Quadratic triangle (6 nodes)
+### Quadratic triangle
 
 Local node ordering is:
 
@@ -36,7 +35,7 @@ Local node ordering is:
 
 So a quadratic triangle has 3 corner nodes + 3 edge nodes.
 
-### Quadratic tetrahedron (10 nodes)
+### Quadratic tetrahedron
 
 Local node ordering is:
 
@@ -50,6 +49,10 @@ Local node ordering is:
 	- node 9 on edge $(2,3)$.
 
 So a quadratic tetrahedron has 4 corner nodes + 6 edge nodes.
+
+## Local numbering
+
+The local numbering for edges and faces mirrors the [numbering for linear simplices](simplices.md#linear-simplices)
 
 ### Consistency across neighboring elements
 
@@ -190,6 +193,4 @@ d_{\max}=\max_i b_i.
 $$
 
 Reference:
-J.-F. Remacle, J. Lambrechts, B. Seny, E. Marchandise, A. Johnen, C. Geuzaine,
-Efficient Visualization of High-Order Finite Elements.
-https://gmsh.info/doc/preprints/gmsh_curved_preprint.pdf
+[*Geometrical Validity of Curvilinear Finite Elements.*, A. Johnen, J.-F. Remacle, C. Geuzaine](https://gmsh.info/doc/preprints/gmsh_curved_preprint.pdf)
