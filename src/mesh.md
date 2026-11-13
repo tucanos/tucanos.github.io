@@ -8,8 +8,8 @@ Mesh handling is implemented primarily in `tmesh` through the `Mesh` trait. It r
 - face tags.
 
 Elements and faces are simplices that can be linear or quadratic. See
-[Mesh generation](mesh_generation.md) for the built-in structured and curved
-generators and the STL reader, [Mesh I/O](io.md) for reading and writing `.meshb`,
+[Generating simple meshes](mesh_generation.md) for the built-in structured and curved
+generators, [Mesh I/O](io.md) for STL input and for reading and writing `.meshb`,
 `.solb`, and `.vtu` files, [Extrusion](extrusion.md) for extruding a 2D mesh, and
 [Isosurface splitting](isosurface.md) for cutting a mesh along a level set.
 
