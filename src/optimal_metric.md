@@ -42,7 +42,7 @@ Where $C_d$ is a constant depending on the dimension $d$ of the simplices compos
 The solution $\mathcal{M}^{opt}_{L^p}$ of the problem exists and is given by:
 
 $$
-\mathcal{M}^{opt}_{L^p} = N^{\frac{2}{d}}\left( \int_{\Omega} \det|H_w|^{\frac{p}{2p+d}} \right)^{-\frac{2}{d}} \det|H_w|^{-\frac{1}{2p+d}}|H_w|
+\mathcal{M}^{opt}_{L^p} = N^{\frac{2}{d}}\left( \int_{\Omega} \det|H_w|^{\frac{p}{2p+d}} \,d\mathbf{x} \right)^{-\frac{2}{d}} \det|H_w|^{-\frac{1}{2p+d}}|H_w|
 $$
 
 The proofs are given in (Loseille 2011b).

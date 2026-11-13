@@ -174,6 +174,18 @@ A mixed law (Alauzet et al., 2021) blends both strategies with parameter $t\in[0
 
 In the lib, these formulas are used through metric spanning and edge-gradation control in `tucanos/src/metric/field/gradation.rs`.
 
+> [!TIP]
+> **Gradation warnings**
+>
+> Gradation is iterative and may stop before satisfying the target:
+>
+> | Message | Meaning / action |
+> | --- | --- |
+> | `gradation: target not achieved: max gradation: {c_max:.2}, {frac:.2e}% of edges have a gradation > {beta}` | The iteration limit was reached while some edges still exceed $\beta$. Increase `max_iter`, relax $\beta$, or smooth the input metric. |
+> | `stop at iteration {n}, {k} elements cannot be fixed` | Metric extension could not assign a metric to `k` vertices, usually because the fixed-metric set or connectivity is insufficient. |
+>
+> Both are warnings; the function still returns the number of updated vertices.
+
 ### Reduction operator
 
 The reduced metric at $\mathbf x$ is
@@ -189,7 +201,7 @@ $$
 
 To enforce edge sizes in $[h_{\min},h_{\max}]$, diagonalize
 $$
-\mathcal M = R^\top\operatorname{diag}(s_1,\dots,s_d)R,
+\mathcal M = R\operatorname{diag}(s_1,\dots,s_d)R^\top,
 $$
 and clamp each spectral value:
 $$
@@ -199,7 +211,7 @@ Then
 $$
 \mathcal T(\mathcal M,h_{\min},h_{\max})
 =
-R^\top\operatorname{diag}(\widetilde s_1,\dots,\widetilde s_d)R.
+R\operatorname{diag}(\widetilde s_1,\dots,\widetilde s_d)R^\top.
 $$
 
 ## Element-implied metric
@@ -212,6 +224,11 @@ $$
 $$
 
 This is exactly the formula used in `tucanos/src/metric/field/implied.rs`.
+
+> [!TIP]
+> **Degenerate element**
+>
+> `MetricField::implied_metric(...)` inverts $(J_{K,\Delta}J_{K,\Delta}^\top)$ for every element and panics with `Degenerate element encountered` when that matrix is singular, i.e. for a zero-volume or flat element. Ensure every element has a positive measure before computing implied metrics.
 
 ## Controlling the step between two metrics
 
@@ -228,13 +245,13 @@ f,
 $$
 Equivalent spectral form:
 $$
-\frac{1}{f}
+\frac{1}{f^2}
 \le
 \lambda_{\min}(\mathcal M_1^{-1/2}\mathcal M\mathcal M_1^{-1/2})
 \le
 \lambda_{\max}(\mathcal M_1^{-1/2}\mathcal M\mathcal M_1^{-1/2})
 \le
-f.
+f^2.
 $$
 
 With the $\mathcal M_1$-twisted Frobenius objective, the algorithm is:
@@ -278,6 +295,20 @@ $$
 \mathcal C(\widetilde{\mathcal M}) = \mathcal N,
 $$
 usually by bisection.
+
+> [!TIP]
+> **Scaling and complexity error messages**
+>
+> Global scaling first runs a simple fixed-point iteration, then an optional constrained bisection.
+>
+> | Message | Meaning / action |
+> | --- | --- |
+> | `Target complexity {n_elems} not reached: complexity {c:.2e}` | Warning emitted when the simple iteration stops before reaching the target. |
+> | `Unable to scale the metric (simple)` | The simple iteration returned no valid scale. The warning above is emitted first. |
+> | `Unable to scale the metric (bisection)` | The constrained bisection could not bracket the target complexity or did not converge within `max_iter`. Check the size bounds and fixed constraints. |
+> | `The complexity of the constrain metric is {constrain_c:.2e} > n_elems = {n_elems}` | The fixed/constraint metric alone already requires more elements than the target. Increase the target or relax the constraints. |
+>
+> Simple scaling accepts the target when $|c-\mathcal N| < 0.05\,\mathcal N$; the same 5% tolerance is used to stop the bisection. The last message uses `constrain` (not `constraint`) verbatim.
 
 ## References
 
