@@ -57,171 +57,229 @@ For Hessians, L2 projection applies gradient projection twice and symmetrizes se
 
 ### Local approximation
 
-The idea is to approximate the variations of a scalar field $u$ on a neighborhood $N(i)$ of vertex $i$ using a local polynomial expansion around $\mathbf{x}_i$. Depending on whether only the gradient or both the gradient and the Hessian are required, either a **linear** or a **quadratic** model is used:
+The idea is to approximate the variations of a scalar field $u$ on a neighborhood $N(i)$ of vertex $i$ using a local polynomial expansion around $\mathbf{x}_i$. To avoid baseline offsets, field values are shifted by the central vertex value $u_i$, so we fit the differences $\Delta u_j = u_j - u_i$.
 
-- **Linear least-squares model (gradient reconstruction):**
-  $$
-  \widehat u_j = \alpha + \sum_{m=1}^{d} a_m \delta_{j,m}
-  $$
-  with unknown coefficient vector
-  $$
-  X \equiv \left(\alpha,\, a_1, \dots, a_d\right)^T \in \mathbb{R}^{n_p}, \qquad n_p = 1 + d
-  $$
-  ($n_p = 3$ in 2D and $n_p = 4$ in 3D). Comparing with the first-order Taylor expansion $u(\mathbf{x}_j) \approx u(\mathbf{x}_i) + \nabla u(\mathbf{x}_i)\cdot\boldsymbol{\delta}_j$, the gradient at $\mathbf{x}_i$ is given directly by
-  $$
-  \frac{\partial u}{\partial x_m}(\mathbf{x}_i) = a_m, \qquad m \in \{1, \dots, d\}.
-  $$
+Depending on whether only the gradient or both the gradient and the Hessian are required, either a **linear** (`order = 1`) or a **quadratic** (`order = 2`) weighted least-squares model is used:
 
-- **Quadratic least-squares model (gradient and Hessian reconstruction):**
-  $$
-  \widehat u_j = \alpha + \sum_{m=1}^{d} a_m \delta_{j,m} + \sum_{1 \le m \le n \le d} a_{m,n} \delta_{j,m}\delta_{j,n}
-  $$
-  with unknown coefficient vector
-  $$
-  X \equiv \left(\alpha,\, a_1, \dots, a_d,\, a_{1,1}, \dots, a_{d,d},\, a_{1,2}, \dots\right)^T \in \mathbb{R}^{n_p}, \qquad n_p = 1 + d + \frac{d(d+1)}{2}
-  $$
-  ($n_p = 6$ in 2D and $n_p = 10$ in 3D). Comparing with the second-order Taylor expansion $u(\mathbf{x}_j) \approx u(\mathbf{x}_i) + \nabla u(\mathbf{x}_i)\cdot\boldsymbol{\delta}_j + \frac{1}{2}\boldsymbol{\delta}_j^T H(\mathbf{x}_i)\boldsymbol{\delta}_j$, both the gradient and the symmetric Hessian at $\mathbf{x}_i$ are recovered via
-  $$
-  \frac{\partial u}{\partial x_m}(\mathbf{x}_i) = a_m, \qquad
-  H_{mn}(\mathbf{x}_i) = \begin{cases}
-  2 a_{m,m} & \text{if } m = n, \\
-  a_{m,n} & \text{if } m < n,
-  \end{cases}
-  $$
-  with $H_{nm} = H_{mn}$ by symmetry.
+* **Linear least-squares model (gradient reconstruction):**
 
-In both models, $\boldsymbol{\delta}_j \equiv \mathbf{x}_j - \mathbf{x}_i$ denotes the displacement vector from vertex $i$ to vertex $j \in N(i)$ with Cartesian components $\delta_{j,m}$, and $X \in \mathbb{R}^{n_p}$ is chosen to minimize the weighted squared residual over $N(i)$:
 $$
-\mathcal{J}(X) = \sum_{j \in N(i)} w_j^2 \left(\widehat u_j - u_j\right)^2
+\widehat u_j = \alpha + \sum_{m=1}^{d} a_m \delta_{j,m}
 $$
-where $w_j > 0$ are stencil weights—typically inverse-distance weights $w_j = \|\boldsymbol{\delta}_j\|^{-p}$ (e.g., $p = 1$ or $p = 2$) for $j \neq i$, with $w_i = 1$ when vertex $i$ itself is included in $N(i)$.
+
+with unknown coefficient vector
+
+$$
+X \equiv \left(\alpha,\, a_1, \dots, a_d\right)^T \in \mathbb{R}^{n_p}, \qquad n_p = 1 + d
+$$
+
+($n_p = 3$ in 2D and $n_p = 4$ in 3D). The physical gradient at $\mathbf{x}_i$ is directly given by $\frac{\partial u}{\partial x_m}(\mathbf{x}_i) = a_m$.
+
+* **Quadratic least-squares model (gradient and Hessian reconstruction):**
+
+$$
+\widehat u_j = \alpha + \sum_{m=1}^{d} a_m \delta_{j,m} + \sum_{m=1}^{d} \frac{1}{2} a_{m,m} \delta_{j,m}^2 + \sum_{1 \le m < n \le d} a_{m,n} \delta_{j,m}\delta_{j,n}
+$$
+
+with unknown coefficient vector
+
+$$
+X \equiv \left(\alpha,\, a_1, \dots, a_d,\, a_{1,1}, \dots, a_{d,d},\, a_{1,2}, \dots\right)^T \in \mathbb{R}^{n_p}, \qquad n_p = 1 + d + \frac{d(d+1)}{2}
+$$
+
+($n_p = 6$ in 2D and $n_p = 10$ in 3D). Including the explicit $\frac{1}{2}$ factor on the pure quadratic terms allows both the gradient and the symmetric Hessian at $\mathbf{x}_i$ to be recovered directly without rescaling diagonal entries:
+
+$$
+\frac{\partial u}{\partial x_m}(\mathbf{x}_i) = a_m, \qquad H_{mn}(\mathbf{x}_i) = a_{m,n}
+$$
+
+with $H_{nm} = H_{mn}$ by symmetry.
 
 **Stencil size and second-order neighbors:**
-- Determining the $n_p$ polynomial coefficients requires **at least $n_p$ vertices** in $N(i)$ (i.e., $|N(i)| \ge n_p$), and in practice strictly more ($|N(i)| > n_p$) so that the least-squares system is overdetermined rather than interpolating discrete noise.
-- For the **linear** model ($n_p = 3$ in 2D, $4$ in 3D), the immediate 1-ring of vertex $i$ (first-order neighbors connected by a mesh edge) almost always provides enough vertices.
-- For the **quadratic** model ($n_p = 6$ in 2D, $10$ in 3D), the 1-ring frequently contains fewer than $n_p$ vertices—especially at boundary vertices, corners, or low-valence interior vertices. In such cases, **second-order neighbors** (the 2-ring, i.e., neighbors of first-order neighbors) must be added to $N(i)$ until $|N(i)| \ge n_p$ (and sufficient geometric spread is achieved).
+To determine all $n_p$ polynomial coefficients, the stencil must contain at least $n_p$ neighbors ($m = \vert{}N(i)\vert{} \ge n_p$):
+
+* For the **linear** model, the immediate 1-ring of vertex $i$ is used.
+
+* For the **quadratic** model, the 1-ring frequently contains fewer than $n_p$ vertices (or produces a poorly poised stencil), so **second-order neighbors** (the 2-ring, excluding vertex $i$ itself) are automatically included to ensure an overdetermined system.
+
+In both models, $\boldsymbol{\delta}_j \equiv \mathbf{x}_j - \mathbf{x}_i$ denotes the displacement vector from vertex $i$ to neighbor $j$. The coefficient vector $X$ is chosen to minimize the weighted squared residual over $N(i)$, augmented with a Tikhonov regularization term on the constant correction $\alpha$:
+
+$$
+\mathcal{J}(X) = \sum_{j \in N(i)} w_j^2 \left(\widehat u_j - \Delta u_j\right)^2 + \lambda \alpha^2
+$$
+
+where:
+
+* $w_j = \Vert{}\boldsymbol{\delta}_j\Vert{}^{-p}$ (`p = weight_exp`, e.g., $p \in \{0, 1, 2\}$) are inverse-distance weights normalized by $w_{\max} = \max_{j \in N(i)} w_j$ so that $\max_j w_j = 1$.
+
+* $\lambda = 2 w_{\max}^2 = 2$ penalizes deviations of $\alpha$ from zero, acting as a central-vertex anchor that prevents ill-posed constant shifts while still allowing $\alpha$ to serve as a local smoothing correction ($u_i^{\text{smooth}} = u_i + \alpha$).
 
 ### Matrix form
 
-Ordering the $m = |N(i)| \ge n_p$ stencil vertices as $j = 1, \dots, m$, minimizing $\mathcal{J}(X)$ takes the linear least-squares matrix form
-$$
-\min_{X \in \mathbb{R}^{n_p}} \left\| W (A X - b) \right\|_2^2 = \min_{X \in \mathbb{R}^{n_p}} \left\| \widehat A X - \widehat b \right\|_2^2
-$$
-where $\widehat A = W A \in \mathbb{R}^{m \times n_p}$, $\widehat b = W b \in \mathbb{R}^m$, and:
-- $W = \operatorname{diag}(w_1, \dots, w_m) \in \mathbb{R}^{m \times m}$ is the diagonal weight matrix,
-- $b = (u_1, \dots, u_m)^T \in \mathbb{R}^m$ is the vector of scalar field values on $N(i)$,
-- $A \in \mathbb{R}^{m \times n_p}$ is the local Vandermonde design matrix whose $j$-th row evaluates the monomial basis at $\boldsymbol{\delta}_j$.
+Ordering the $m = \vert{}N(i)\vert{}$ stencil neighbors as $j = 1, \dots, m$, minimizing $\mathcal{J}(X)$ takes the linear least-squares matrix form
 
-For the **linear** model, the $j$-th row of $A$ is:
 $$
-A_{j,:}^{\text{lin, 2D}} = \begin{bmatrix} 1 & \delta_{j,1} & \delta_{j,2} \end{bmatrix}, \qquad
-A_{j,:}^{\text{lin, 3D}} = \begin{bmatrix} 1 & \delta_{j,1} & \delta_{j,2} & \delta_{j,3} \end{bmatrix}
+\min_{X \in \mathbb{R}^{n_p}} \left\Vert{} W (A X - \Delta U) \right\Vert{}_2^2 + \lambda \alpha^2 = \min_{X \in \mathbb{R}^{n_p}} \left\Vert{} \widehat A X - \widehat b \right\Vert{}_2^2 + \lambda \alpha^2
 $$
-For the **quadratic** model, the $j$-th row of $A$ is:
+
+where $\widehat A = W A \in \mathbb{R}^{m \times n_p}$, $\widehat b = W \Delta U \in \mathbb{R}^m$, and:
+
+* $W = \operatorname{diag}(w_1, \dots, w_m) \in \mathbb{R}^{m \times m}$ is the diagonal matrix of normalized weights,
+
+* $\Delta U = (\Delta u_1, \dots, \Delta u_m)^T \in \mathbb{R}^m$ is the vector of field differences,
+
+* $A \in \mathbb{R}^{m \times n_p}$ is the local Vandermonde design matrix whose $j$-th row evaluates the polynomial basis $\boldsymbol{\phi}(\boldsymbol{\delta}_j)^T$ at $\boldsymbol{\delta}_j$.
+
+For the quadratic model (`order = 2`), the $j$-th row of $A$ in 2D ($d=2$, $n_p=6$) and 3D ($d=3$, $n_p=10$) is:
+
 $$
-A_{j,:}^{\text{quad, 2D}} = \begin{bmatrix} 1 & \delta_{j,1} & \delta_{j,2} & \delta_{j,1}^2 & \delta_{j,2}^2 & \delta_{j,1}\delta_{j,2} \end{bmatrix}
+A_{j,:}^{\text{2D}} = \begin{bmatrix} 1 & \delta_{j,1} & \delta_{j,2} & \frac{1}{2}\delta_{j,1}^2 & \frac{1}{2}\delta_{j,2}^2 & \delta_{j,1}\delta_{j,2} \end{bmatrix}
 $$
+
 $$
-A_{j,:}^{\text{quad, 3D}} = \begin{bmatrix} 1 & \delta_{j,1} & \delta_{j,2} & \delta_{j,3} & \delta_{j,1}^2 & \delta_{j,2}^2 & \delta_{j,3}^2 & \delta_{j,1}\delta_{j,2} & \delta_{j,1}\delta_{j,3} & \delta_{j,2}\delta_{j,3} \end{bmatrix}
+A_{j,:}^{\text{3D}} = \begin{bmatrix} 1 & \delta_{j,1} & \delta_{j,2} & \delta_{j,3} & \frac{1}{2}\delta_{j,1}^2 & \frac{1}{2}\delta_{j,2}^2 & \frac{1}{2}\delta_{j,3}^2 & \delta_{j,1}\delta_{j,2} & \delta_{j,2}\delta_{j,3} & \delta_{j,1}\delta_{j,3} \end{bmatrix}
 $$
+
+(For `order = 1`, only the first $1 + d$ columns are retained.)
 
 ### Solution method & conditioning issues
 
-In anisotropic mesh adaptation, solving $\min_X \|\widehat A X - \widehat b\|_2^2$ directly in physical coordinates suffers from three severe sources of ill-conditioning:
-1. **Mesh-size scaling disparity:** Columns of $A$ scale as $O(1)$ (constant $\alpha$), $O(h)$ (linear terms), and $O(h^2)$ (quadratic terms). On refined meshes ($h \ll 1$), column norms differ by orders of magnitude, yielding $\kappa(\widehat A) = O(h^{-1})$ for the linear model and $\kappa(\widehat A) = O(h^{-2})$ for the quadratic model.
-2. **Element anisotropy:** On stretched elements with aspect ratio $s = h_{\max}/h_{\min} \gg 1$, displacements along stretched and compressed directions differ by $O(s)$, inflating $\kappa(\widehat A)$ by an additional factor of $O(s)$ (linear) or $O(s^2)$ (quadratic).
-3. **Geometric degeneracy:** Near planar boundaries, thin sheets, or collinear neighborhoods, displacements along a normal direction vanish, making columns involving that direction nearly or strictly linearly dependent.
+Solving the weighted least-squares problem directly in physical coordinates suffers from three primary sources of ill-conditioning on adapted meshes:
 
-> **Note — Effect of excluding $\alpha$ on conditioning:**
-> Fixing $\alpha = u_i$ (i.e., omitting $\alpha$ from the unknowns $X$ and fitting $\widehat u_j - u_i$ over $j \in N(i) \setminus \{i\}$) **significantly reduces the condition number**:
-> 1. **Mesh-size scaling:** Removing the $O(1)$ constant column eliminates the largest singular value, lowering the condition number by a full factor of $O(h^{-1})$—from $O(h^{-2})$ down to $O(h^{-1})$ for the quadratic model, and from $O(h^{-1})$ down to $O(1)$ for the linear model.
-> 2. **Collinearity with even-degree terms:** Even after normalizing coordinates so that $\|\hat{\boldsymbol{\delta}}_j\| = O(1)$, the constant basis function $1$ and the pure quadratic basis functions $\hat\delta_{j,m}^2$ (which are strictly non-negative and roughly constant on symmetric stencil shells) remain strongly correlated. Omitting $\alpha$ eliminates this near-collinearity between degree-$0$ and degree-$2$ columns.
->
-> However, fixing $\alpha = u_i$ forces the reconstructed polynomial to interpolate the discrete nodal value $u_i$ exactly, making the derivatives directly sensitive to point-wise noise or $C^0$ kinks at vertex $i$. Leaving $\alpha$ as a free parameter acts as a local smoothing filter that prevents noise amplification, at the cost of a larger condition number that must be addressed by preconditioning.
+1. **Mesh-size scaling disparity:** The columns of $A$ scale as $O(1)$ (constant term), $O(h)$ (linear terms), and $O(h^2)$ (quadratic terms). On refined meshes ($h \ll 1$), column norms span multiple orders of magnitude, giving $\kappa(\widehat A) = O(h^{-2})$.
+
+2. **Element anisotropy:** On stretched elements with aspect ratio $s = h_{\max}/h_{\min} \gg 1$ (common in boundary-layer or shock-aligned meshes, where $s$ can reach $10^6$), displacements along stretched and compressed directions differ by $O(s)$, inflating $\kappa(\widehat A)$ by an additional factor of $O(s^2)$.
+
+3. **Geometric degeneracy:** When a stencil is nearly coplanar or collinear (e.g., at boundary vertices or collapsed neighborhoods), displacements along a normal direction vanish, making columns associated with that direction nearly linearly dependent.
+
+> [!NOTE]
+> **Excluding $\alpha$:** Setting $\alpha = 0$ (enforcing exact interpolation $\widehat u_i = u_i$ at vertex $i$ and dropping the first column of $A$) removes the $O(1)$ constant column. This reduces the mesh-size condition number by a full factor of $O(h^{-1})$—from $O(h^{-2})$ to $O(h^{-1})$ for the quadratic model, and from $O(h^{-1})$ to $O(1)$ for the linear model—and avoids coupling between the constant column $1$ and the non-negative quadratic columns $\delta_{j,m}^2$. In `tucanos`, $\alpha$ is retained so the same operator can filter noise (`smooth`), while the damping term $\lambda \alpha^2$ ($\lambda = 2 w_{\max}^2$) stabilizes the first column.
 
 #### Normal equations
 
-The classical normal equations set the gradient of $\mathcal{J}(X)$ to zero:
+Setting the gradient of $\mathcal{J}(X)$ with respect to $X$ to zero yields the regularized normal equations:
+
 $$
-\widehat A^T \widehat A X = \widehat A^T \widehat b \iff A^T W^2 A X = A^T W^2 b
+\left(A^T W^2 A + \Lambda\right) X = A^T W^2 \Delta U, \qquad \Lambda = \operatorname{diag}(\lambda, 0, \dots, 0)
 $$
-While fast to assemble and solve (a symmetric $n_p \times n_p$ system), forming $\widehat A^T \widehat A$ **squares the condition number**:
+
+* **Advantage:** The system matrix $N = A^T W^2 A + \Lambda$ is symmetric positive-definite of tiny fixed size $n_p \times n_p$ ($3\times 3$ or $6\times 6$ in 2D; $4\times 4$ or $10\times 10$ in 3D), making it very fast to assemble and factorize via Cholesky decomposition. Moreover, $N^{-1} A^T W^2$ depends only on mesh geometry and can be reused across multiple scalar fields.
+
+* **Conditioning drawback:** Forming $A^T W^2 A$ **squares the condition number**:
+
 $$
-\kappa(\widehat A^T \widehat A) = \kappa(\widehat A)^2 = O\!\left(h^{-4} s^4\right) \quad (\text{quadratic})
+\kappa(N) \approx \kappa(\widehat A)^2 = O\!\left(h^{-4} s^4\right)
 $$
-In IEEE-754 double precision ($\epsilon_{\text{mach}} \approx 2.2 \times 10^{-16}$), all significant digits are lost once $\kappa(\widehat A) \gtrsim 10^8$, making the normal equations unreliable on fine or anisotropic meshes.
+
+In IEEE-754 double precision ($\epsilon_{\text{mach}} \approx 2.2 \times 10^{-16}$), all accuracy is lost once $\kappa(\widehat A) \gtrsim 10^8$, causing Cholesky factorization to fail or return corrupted derivatives if applied directly in unscaled physical coordinates.
 
 #### Thin QR decomposition
 
-Factorizing $\widehat A = Q R$ with $Q \in \mathbb{R}^{m \times n_p}$ ($Q^T Q = I_{n_p}$) and upper-triangular $R \in \mathbb{R}^{n_p \times n_p}$ reduces the least-squares problem to the triangular system
+Factorizing the augmented weighted design matrix $\widehat A_{\text{aug}} = Q R$ with $Q \in \mathbb{R}^{(m+1) \times n_p}$ ($Q^T Q = I_{n_p}$) and upper-triangular $R \in \mathbb{R}^{n_p \times n_p}$ reduces the problem to the triangular system
+
 $$
-R X = Q^T \widehat b
+R X = Q^T \widehat b_{\text{aug}}
 $$
-Thin QR avoids squaring the condition number ($\kappa(R) = \kappa(\widehat A)$). However, without rescaling and rotating the local coordinate frame, $\kappa(\widehat A)$ itself remains $O(h^{-2} s^2)$, and rank-deficient boundary stencils still produce singular or near-singular diagonal entries in $R$.
+
+* **Advantage:** Thin QR avoids squaring the condition number ($\kappa(R) = \kappa(\widehat A_{\text{aug}})$), making it substantially more accurate than unpreconditioned normal equations.
+
+* **Drawback:** Computing a QR factorization of an $m \times n_p$ matrix at every mesh vertex is more expensive than assembling and Cholesky-factoring an $n_p \times n_p$ normal matrix. Furthermore, without changing to a local isotropic basis, $\kappa(R) = O(h^{-2} s^2)$ still degrades on extreme aspect ratios ($s \sim 10^6$).
 
 ### Preconditioning via local change of basis
 
-To eliminate both mesh-size scaling ($O(h^{-2})$) and directional stretching ($O(s^2)$), the polynomial is reformulated in a local, dimensionless, isotropic coordinate frame aligned with the principal axes of the stencil $N(i)$.
+To combine the speed of the normal equations with numerical stability on arbitrary mesh sizes and extreme anisotropies, the polynomial is reformulated in a local, dimensionless, isotropic coordinate frame aligned with the principal axes of the weighted stencil.
 
 #### SVD
 
-Collect the weighted relative position vectors into the displacement matrix $D \in \mathbb{R}^{m \times d}$ with rows $D_{j,:} = w_j \boldsymbol{\delta}_j^T$, and compute its thin singular value decomposition:
-$$
-D = U \Sigma V^T
-$$
-where:
-- $V = [\mathbf{v}_1, \dots, \mathbf{v}_d] \in \mathbb{R}^{d \times d}$ is orthogonal ($V^T V = I_d$) and defines the principal directions of the stencil,
-- $\Sigma = \operatorname{diag}(\sigma_1, \dots, \sigma_d)$ with $\sigma_1 \ge \sigma_2 \ge \dots \ge \sigma_d \ge 0$ gives the characteristic weighted stencil length scales along each principal axis.
+Collect the weighted relative displacement vectors into the $m \times d$ coordinate matrix $X_w \in \mathbb{R}^{m \times d}$ with rows
 
-To prevent division by zero when a stencil is coplanar or collinear ($\sigma_k \ll \sigma_1$), define regularized singular values $\widehat\sigma_k = \max(\sigma_k, \epsilon_{\text{geom}} \sigma_1)$ (with $\epsilon_{\text{geom}} \ll 1$, e.g., $10^{-12}$) and $\widehat\Sigma = \operatorname{diag}(\widehat\sigma_1, \dots, \widehat\sigma_d)$. Defining the linear map $M = V \widehat\Sigma \in \mathbb{R}^{d \times d}$, the normalized local coordinates $\hat{\boldsymbol{\delta}}_j \in \mathbb{R}^d$ are
 $$
-\hat{\boldsymbol{\delta}}_j = M^{-1} \boldsymbol{\delta}_j = \widehat\Sigma^{-1} V^T \boldsymbol{\delta}_j \iff \boldsymbol{\delta}_j = V \widehat\Sigma \hat{\boldsymbol{\delta}}_j
+[X_w]_{j,:} = w_j \boldsymbol{\delta}_j^T
 $$
-In this local basis, $\|\hat{\boldsymbol{\delta}}_j\| = O(1)$ isotropically across all active stencil directions.
+
+and compute its thin singular value decomposition:
+
+$$
+X_w = U \Sigma V^T
+$$
+
+where:
+
+* $V = [\mathbf{v}_1, \dots, \mathbf{v}_d] \in \mathbb{R}^{d \times d}$ is orthogonal ($V^T V = I_d$) and defines the principal geometric directions of the stencil,
+
+* $\Sigma = \operatorname{diag}(\sigma_1, \dots, \sigma_d)$ with $\sigma_1 \ge \sigma_2 \ge \dots \ge \sigma_d \ge 0$ captures the characteristic weighted stencil length scales along each principal axis.
+
+To prevent division by zero on flat or degenerate stencils ($\sigma_k \ll \sigma_1$), the inverse singular values are clamped using a relative threshold of $10^{-14}$:
+
+$$
+\sigma_k^{-1} = \frac{1}{\max\!\left(\sigma_k,\, \max(\sigma_1, 10^{-20}) \cdot 10^{-14}\right)}
+$$
+
+This defines the forward whitening transformation $P \in \mathbb{R}^{d \times d}$ and its inverse transpose $T_{\text{inv}} \in \mathbb{R}^{d \times d}$:
+
+$$
+P = \Sigma^{-1} V^T, \qquad T_{\text{inv}} = P^{-T} = V \Sigma^{-1}
+$$
+
+Every displacement vector is mapped into the whitened local frame prior to polynomial evaluation:
+
+$$
+\boldsymbol{\delta}'_j = P \boldsymbol{\delta}_j = \Sigma^{-1} V^T \boldsymbol{\delta}_j
+$$
 
 #### Matrix form
 
-Expressing the local polynomial in the normalized coordinates $\hat{\boldsymbol{\delta}}_j = (\hat\delta_{j,1}, \dots, \hat\delta_{j,d})^T$ (either linear or quadratic) yields the well-scaled local Vandermonde matrix $\hat A \in \mathbb{R}^{m \times n_p}$ (constructed identically to $A$, with $\delta_{j,m}$ replaced by $\hat\delta_{j,m}$) and weighted system
+Evaluating the unweighted polynomial basis $\boldsymbol{\phi}(\boldsymbol{\delta}'_j)$ at the transformed coordinates $\boldsymbol{\delta}'_j$ yields the preconditioned Vandermonde matrix $A' \in \mathbb{R}^{m \times n_p}$ and transformed unknown vector $X'$:
+
 $$
-\min_{\hat X \in \mathbb{R}^{n_p}} \left\| \widehat{\hat A} \hat X - \widehat b \right\|_2^2, \qquad \widehat{\hat A} = W \hat A
+\min_{X' \in \mathbb{R}^{n_p}} \left\Vert{} W (A' X' - \Delta U) \right\Vert{}_2^2 + \lambda \alpha^2
 $$
-Because $\boldsymbol{\delta}_j = M \hat{\boldsymbol{\delta}}_j$ is linear, the physical coefficients $X$ and local-basis coefficients $\hat X$ are related by an invertible block-diagonal transformation $T \in \mathbb{R}^{n_p \times n_p}$ such that $\hat A = A T$ and $X = T \hat X$:
-- **Constant term:** $\alpha = \hat\alpha$.
-- **Gradient (linear and quadratic models):** $\nabla_{\mathbf{x}} u(\mathbf{x}_i) = M^{-T} \hat{\mathbf{a}} = V \widehat\Sigma^{-1} \hat{\mathbf{a}}$.
-- **Hessian (quadratic model only):** Forming the symmetric local Hessian $\hat H$ from $\hat X$ ($\hat H_{mm} = 2\hat a_{m,m}$ and $\hat H_{mn} = \hat H_{nm} = \hat a_{m,n}$ for $m < n$), the physical Hessian is
-  $$
-  H_{\mathbf{x}}(\mathbf{x}_i) = M^{-T} \hat H M^{-1} = V \widehat\Sigma^{-1} \hat H \widehat\Sigma^{-1} V^T
-  $$
+
+Because $\boldsymbol{\delta}'_j = P \boldsymbol{\delta}_j$ is a linear change of coordinates, the local derivatives $\mathbf{g}' = (a'_1, \dots, a'_d)^T$ and symmetric local Hessian $H'$ ($H'_{mn} = a'_{m,n}$) map back to physical Cartesian space via the chain rule:
+
+$$
+\nabla_{\mathbf{x}} u(\mathbf{x}_i) = T_{\text{inv}} \mathbf{g}', \qquad H_{\mathbf{x}}(\mathbf{x}_i) = T_{\text{inv}} H' T_{\text{inv}}^T
+$$
 
 ### SVD preconditioning
 
-Algebraically, transforming the Vandermonde matrix from physical displacements $\boldsymbol{\delta}_j$ to SVD-normalized displacements $\hat{\boldsymbol{\delta}}_j = \widehat\Sigma^{-1} V^T \boldsymbol{\delta}_j$ corresponds to **right-preconditioning** the weighted Vandermonde matrix $\widehat A = W A$ by the block-diagonal polynomial change-of-basis matrix $T$:
-$$
-\widehat{\hat A} = \widehat A T, \qquad T = \operatorname{diag}\!\left(1,\, M^{-T},\, T_{\text{quad}}\right)
-$$
-where $T_{\text{quad}}$ maps the local second-order monomials to physical second-order monomials (and is omitted for the linear model).
+Applying the $d \times d$ SVD whitening transform $P = \Sigma^{-1} V^T$ to the coordinates acts as an exact geometric right-preconditioner on the Vandermonde system:
 
-This SVD-based geometric preconditioning decouples the condition number of the least-squares matrix from both the local mesh size $h$ and the element aspect ratio $s$, reducing $\kappa(\widehat{\hat A})$ to $O(1)$ on non-degenerate stencils.
+1. **Elimination of** $O(h^{-2})$ **and** $O(s^2)$ **ill-conditioning:** In the whitened frame, the weighted displacements $w_j \boldsymbol{\delta}'_j$ have unit singular values along all non-degenerate principal axes. Consequently, the columns of $W A'$ are $O(1)$ regardless of mesh refinement $h$ or element stretching $s$, keeping $\kappa(W A') = O(1)$ even for aspect ratios as severe as $s = 10^6$.
 
-*(Optional safeguard for rank-deficient stencils)*: When a stencil lies strictly on a lower-dimensional boundary manifold (so $\sigma_d \approx 0$ and all monomial columns involving $\hat\delta_d$ vanish), $\widehat{\hat A}$ has zero columns. In that case, either those degenerate columns are dropped / regularized via a truncated SVD pseudoinverse of $\widehat{\hat A}$ (zeroing singular values below $\tau \bar\sigma_1$), or diagonal regularization is applied so that unobservable normal derivatives default to zero.
+2. **Safe use of Normal Equations + Cholesky:** Because $\kappa(W A') = O(1)$, squaring the condition number in the preconditioned normal matrix
+
+$$
+N = (A')^T W^2 A' + \Lambda
+$$
+
+yields $\kappa(N) = \kappa(W A')^2 = O(1)$, well within double-precision limits. This eliminates the need for a more expensive Thin QR factorization or a second SVD on the $m \times n_p$ Vandermonde matrix.
+
+3. **Fallback for boundary or degenerate vertices:** Boundary vertices (`boundary_flag`) and any interior vertices where Cholesky factorization fails due to extreme geometric degeneracy are flagged and subsequently filled by iteratively averaging valid values from their 1-ring neighbors (`fix_not_computed`).
 
 ### Solving
 
-For each mesh vertex $i$, the complete reconstruction proceeds as follows:
+For each non-boundary mesh vertex $i$, the reconstruction proceeds as follows:
 
-1. **Stencil and weight assembly:** Collect the neighborhood $N(i)$—starting from the 1-ring and adding second-order (or higher-order) neighbors until $|N(i)| \ge n_p$—compute displacements $\boldsymbol{\delta}_j = \mathbf{x}_j - \mathbf{x}_i$, and evaluate the diagonal weights $W = \operatorname{diag}(w_1, \dots, w_m)$.
-2. **Local geometric change of basis (SVD preconditioning):** Form the weighted displacement matrix $D \in \mathbb{R}^{m \times d}$, compute its thin SVD $D = U \Sigma V^T$, regularize small singular values to form $\widehat\Sigma$, and map displacements to normalized local coordinates $\hat{\boldsymbol{\delta}}_j = \widehat\Sigma^{-1} V^T \boldsymbol{\delta}_j$.
-3. **Preconditioned system assembly and Thin QR solve:** Assemble $\widehat{\hat A} = W \hat A$ and $\widehat b = W b$, compute the thin QR factorization $\widehat{\hat A} = Q R$, and solve the upper-triangular system
-   $$
-   R \hat X = Q^T \widehat b
-   $$
-   for the local-basis coefficients $\hat X$ (falling back to a truncated SVD pseudoinverse if $R$ is numerically rank-deficient).
-4. **Back-transformation to physical space:** Extract the local gradient $\hat{\mathbf{a}}$ (and, for the quadratic model, the symmetric local Hessian $\hat H$) from $\hat X$, and transform back to global Cartesian coordinates:
-   $$
-   \nabla_{\mathbf{x}} u(\mathbf{x}_i) = V \widehat\Sigma^{-1} \hat{\mathbf{a}}, \qquad
-   H_{\mathbf{x}}(\mathbf{x}_i) = V \widehat\Sigma^{-1} \hat H \widehat\Sigma^{-1} V^T
-   $$
-   
+1. **Neighbor collection:** Gather the 1-ring of vertex $i$ (and expand to the 2-ring, excluding $i$, when `order = 2`), then compute physical displacements $\boldsymbol{\delta}_j = \mathbf{x}_j - \mathbf{x}_i$ and field differences $\Delta u_j = u_j - u_i$.
+
+2. **Weight normalization:** Compute $w_j = \Vert{}\boldsymbol{\delta}_j\Vert{}^{-p}$ and normalize all weights by $w_{\max}$ so that $\max_j w_j = 1$.
+
+3. **Coordinate whitening via SVD:** Assemble the $m \times d$ matrix $X_w$ with rows $w_j \boldsymbol{\delta}_j^T$, compute its thin SVD $X_w = U \Sigma V^T$, clamp small singular values, and form $P = \Sigma^{-1} V^T$ and $T_{\text{inv}} = V \Sigma^{-1}$.
+
+4. **Normal equations assembly:** Map each offset to $\boldsymbol{\delta}'_j = P \boldsymbol{\delta}_j$, evaluate the polynomial basis $\boldsymbol{\phi}(\boldsymbol{\delta}'_j)$, and accumulate the symmetric $n_p \times n_p$ normal matrix and $n_p \times m$ projection matrix:
+
+$$
+N = \Lambda + \sum_{j=1}^{m} w_j^2 \boldsymbol{\phi}(\boldsymbol{\delta}'_j) \boldsymbol{\phi}(\boldsymbol{\delta}'_j)^T, \qquad B = \begin{bmatrix} w_1^2 \boldsymbol{\phi}(\boldsymbol{\delta}'_1) & \cdots & w_m^2 \boldsymbol{\phi}(\boldsymbol{\delta}'_m) \end{bmatrix}
+$$
+
+with $\Lambda = \operatorname{diag}(2 w_{\max}^2, 0, \dots, 0)$.
+
+5. **Cholesky solve:** Factorize $N = L L^T$ via Cholesky decomposition and solve $N X' = B \Delta U$ for $X'$.
+
+6. **Physical derivative recovery and boundary propagation:** Extract the smoothed correction $\alpha = X'_0$, map $\mathbf{g}'$ and $H'$ back to physical coordinates via $\nabla_{\mathbf{x}} u = T_{\text{inv}} \mathbf{g}'$ and $H_{\mathbf{x}} = T_{\text{inv}} H' T_{\text{inv}}^T$, and propagate valid values to boundary or failed vertices via iterative 1-ring neighbor averaging.
+
+
 ## Errors and method restrictions
 
 The least-squares backend reports local-solve failures, and the mesh-level
