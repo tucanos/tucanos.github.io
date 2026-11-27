@@ -19,35 +19,24 @@ Rust:
 
 ```rust
 # extern crate tmesh;
-use tmesh::{Tag, Vert2d};
-use tmesh::mesh::{Edge, Mesh, Mesh2d, Triangle};
+use tmesh::mesh::{Mesh, Mesh2d};
 
-let verts = vec![
-	Vert2d::new(0.0, 0.0),
-	Vert2d::new(1.0, 0.0),
-	Vert2d::new(2.0, 0.0),
-	Vert2d::new(1.0, 1.0),
-	Vert2d::new(2.0, 1.0),
+let verts = [
+	[0.0, 0.0],
+	[1.0, 0.0],
+	[2.0, 0.0],
+	[1.0, 1.0],
+	[2.0, 1.0],
 ];
 
-let elems = vec![
-	Triangle::new(0, 1, 3),
-	Triangle::new(1, 2, 3),
-	Triangle::new(2, 4, 3),
-];
-let etags: Vec<Tag> = vec![1, 1, 1];
+let elems = [[0, 1, 3], [1, 2, 3], [2, 4, 3]];
+let etags = [1, 1, 1];
 
 // Boundary edges only (internal edges are not listed here).
-let faces = vec![
-	Edge::new(0, 1),
-	Edge::new(1, 2),
-	Edge::new(2, 4),
-	Edge::new(4, 3),
-	Edge::new(3, 0),
-];
-let ftags: Vec<Tag> = vec![10, 10, 10, 10, 10];
+let faces = [[0, 1], [1, 2], [2, 4], [4, 3], [3, 0]];
+let ftags = [10, 10, 10, 10, 10];
 
-let msh = Mesh2d::from_vecs(verts, elems, etags, faces, ftags);
+let msh = Mesh2d::from_slices(&verts, &elems, &etags, &faces, &ftags);
 assert_eq!(msh.n_elems(), 3);
 ```
 

@@ -87,25 +87,20 @@ Calling `fix()` reorients listed boundary faces as needed and adds the missing b
 
 ```rust
 # extern crate tmesh;
-use tmesh::{Tag, Vert3d};
-use tmesh::mesh::{BoundaryMesh3d, Edge, Mesh, Triangle};
+use tmesh::mesh::{BoundaryMesh3d, Mesh};
 
-let verts = vec![
-	Vert3d::new(0.0, 0.0, 0.0),
-	Vert3d::new(1.0, 0.0, 0.0),
-	Vert3d::new(0.0, 1.0, 0.0),
-];
+let verts = [[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [0.0, 1.0, 0.0]];
 
 // One triangle in 3D.
-let elems = vec![Triangle::new(0, 1, 2)];
-let etags: Vec<Tag> = vec![1];
+let elems = [[0, 1, 2]];
+let etags = [1];
 
 // Incomplete + intentionally reversed boundary-face list.
 // For triangle elements, topological faces are edges.
-let faces = vec![Edge::new(1, 0)];
-let ftags: Vec<Tag> = vec![10];
+let faces = [[1, 0]];
+let ftags = [10];
 
-let mut msh = BoundaryMesh3d::from_vecs(verts, elems, etags, faces, ftags);
+let mut msh = BoundaryMesh3d::from_slices(&verts, &elems, &etags, &faces, &ftags);
 
 let (_new_bdy_tags, _new_ifc_tags) = msh.fix().unwrap();
 

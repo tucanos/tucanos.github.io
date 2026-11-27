@@ -23,22 +23,22 @@ Rust:
 
 ```rust
 # extern crate tmesh;
-use tmesh::{Tag, Vert3d};
+use tmesh::Tag;
 use tmesh::mesh::{Hexahedron, Mesh, Mesh3d, Pyramid};
 
 let mut msh = Mesh3d::empty();
 
 // 8 vertices of the unit cube + 1 apex for the pyramid.
-let verts = vec![
-	Vert3d::new(0.0, 0.0, 0.0), // 0
-	Vert3d::new(1.0, 0.0, 0.0), // 1
-	Vert3d::new(1.0, 1.0, 0.0), // 2
-	Vert3d::new(0.0, 1.0, 0.0), // 3
-	Vert3d::new(0.0, 0.0, 1.0), // 4
-	Vert3d::new(1.0, 0.0, 1.0), // 5
-	Vert3d::new(1.0, 1.0, 1.0), // 6
-	Vert3d::new(0.0, 1.0, 1.0), // 7
-	Vert3d::new(0.5, 0.5, 1.8), // 8 (pyramid apex)
+let verts = [
+	[0.0, 0.0, 0.0], // 0
+	[1.0, 0.0, 0.0], // 1
+	[1.0, 1.0, 0.0], // 2
+	[0.0, 1.0, 0.0], // 3
+	[0.0, 0.0, 1.0], // 4
+	[1.0, 0.0, 1.0], // 5
+	[1.0, 1.0, 1.0], // 6
+	[0.0, 1.0, 1.0], // 7
+	[0.5, 0.5, 1.8], // 8 (pyramid apex)
 ];
 msh.add_verts(verts.into_iter());
 
