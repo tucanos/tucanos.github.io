@@ -4,6 +4,10 @@ on:
   pull_request:
   workflow_dispatch:
 
+env:
+  # Rust snippets in this book document this tucanos revision.
+  TUCANOS_REF: 57208b2dc3c9943f8e2634d7613546c59484b592
+
 jobs:
   mdbook-test:
     runs-on: ubuntu-latest
@@ -24,8 +28,9 @@ jobs:
 
       - name: Clone and build remote tucanos crates
         run: |
-          git clone --depth 1 https://github.com/tucanos/tucanos /tmp/tucanos-remote
+          git clone https://github.com/tucanos/tucanos /tmp/tucanos-remote
           cd /tmp/tucanos-remote
+          git checkout --detach "$TUCANOS_REF"
           cargo build -p tmesh -p tucanos
 
       - name: Run mdbook test
