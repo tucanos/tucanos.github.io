@@ -51,7 +51,7 @@ The proofs are given in (Loseille 2011b).
 
 In practice, two Hessian-recovery strategies are used in the lib:
 
-- a Least-Squares (LS) approach applied twice (gradient then Hessian), with local systems solved by QR decomposition,
+- a Least-Squares (LS) approach that recovers the gradient and Hessian from one quadratic fit, with SVD preconditioning of the weighted normal equations and a Cholesky solve,
 - a Clément-type local $L^2$ projection approach (`L2proj`) (Clement, 1975), similar to the recovery strategy described in Alauzet (2021).
 
 Both approaches operate on vertex values. When the source field is element-centered, a volumetric interpolation to mesh vertices is performed first.

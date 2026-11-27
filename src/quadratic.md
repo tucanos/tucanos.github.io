@@ -135,8 +135,8 @@ In `tmesh`, mesh connectivity and storage are Lagrange-based; Bezier conversion 
 
 Projection strategy follows simplex recursion:
 
-- if barycentric coordinates are all non-negative, the projection is inside the element,
-- otherwise the projection is delegated to boundary faces and the closest face projection is retained.
+- if barycentric coordinates are all strictly positive, the projection is inside the element,
+- if any coordinate is zero or negative, the projection is delegated to boundary faces and the closest face projection is retained.
 
 For quadratic simplices, inverse mapping is nonlinear:
 

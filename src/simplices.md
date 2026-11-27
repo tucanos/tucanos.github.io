@@ -73,15 +73,17 @@ In mesh workflows, valid elements are expected to have positive measure after or
 
 ### Equality and canonicalization assumptions
 
-Two different notions are used:
+`is_same` is implemented per element type, and `sorted` is not available for every element type:
 
-- `is_same`: orientation-aware simplex equality under valid local permutations,
-- `sorted`: canonical index ordering for hashing/lookup (orientation is not preserved by sorting).
+| Element | `is_same` | `sorted` |
+| --- | --- | --- |
+| Node, linear edge, quadratic edge | exact equality | identity for nodes, ascending endpoint ids for edges; a quadratic edge keeps its midpoint id at index 2 |
+| Linear triangle | orientation-preserving cyclic permutation of the three corners | ascending vertex ids |
+| Linear tetrahedron | orientation-preserving corner matching | ascending vertex ids |
+| Quadratic triangle | orientation-preserving matching of the three linear corners; midpoint ids are ignored | ascending linear-corner ids with midpoint ids permuted consistently |
+| Quadratic tetrahedron | exact equality | not available |
 
-In practice:
-
-- use orientation-preserving checks when geometric sign matters,
-- use sorted forms for connectivity maps and deduplication keys.
+Use orientation-preserving checks when geometric sign matters. Sorted forms are connectivity keys for linear simplices, quadratic edges and quadratic triangles, not for quadratic tetrahedra.
 
 ## Linear simplices
 

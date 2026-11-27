@@ -27,10 +27,12 @@ So vector directions encode principal directions, and vector norms encode princi
 - **2D edge mesh**: one curvature direction per element (`u`).
 - **3D triangle mesh**: two principal directions per element (`u`, `v`).
 
+For linear meshes these are element arrays. For quadratic 3D triangles, curvature is computed per vertex from the quadratic geometric element, so the stored arrays have one entry per vertex.
+
 
 ## Discrete algorithm used in tucanos
 
-For quadratic meshes, curvature is obtained from quadratic geometric elements (`QuadraticGEdge` / `QuadraticGTriangle`) directly. For linear meshed, the algorithm described [here](https://gfx.cs.princeton.edu/pubs/Rusinkiewicz_2004_ECA/curvpaper.pdf) is outlined below 
+For quadratic meshes, curvature is obtained from quadratic geometric elements (`QuadraticGEdge` / `QuadraticGTriangle`) directly. For linear meshes, the algorithm described [here](https://gfx.cs.princeton.edu/pubs/Rusinkiewicz_2004_ECA/curvpaper.pdf) is outlined below
 
 ### 1. Vertex normal estimation
 
@@ -67,11 +69,11 @@ is diagonalized (symmetric eigendecomposition). Eigenvectors define principal di
 
 ### 4. Magnitude bounding
 
-Curvature magnitudes are bounded using the global scale `H_MAX` (through `bound_curvature`) so small/near-zero values are stabilized and extreme values are clipped consistently with remeshing constraints.
+The global scale `H_MAX` sets the bound $b = 1/H_{\max}$ (through `bound_curvature`). Positive magnitudes below $b$ are raised to $b$, negative magnitudes in $(-b,0)$ are mapped to $-b$, and values outside $[-b,b]$ are left unchanged. In the 3D tensor path, eigenvalues with absolute value below $10^{-16}$ are replaced by $10^{-16}$ before bounding.
 
 ### 5. Boundary fix-up
 
-Curvature near patch boundaries is less reliable. `fix_curvature` propagates orientation/magnitude from valid interior neighbors with the same element tag to boundary-adjacent elements.
+Curvature near patch boundaries is less reliable. `fix_curvature` uses valid interior neighbors with the same element tag. In 3D it propagates iteratively and rebuilds each direction in the boundary element's tangent frame. In 2D it performs a single pass, copying the neighbor magnitude while keeping the boundary element's direction.
 
 This yields more consistent tensors around patch borders.
 

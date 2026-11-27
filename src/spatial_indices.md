@@ -42,7 +42,7 @@ $$
 
 where $n_v=3$ in triangles and $n_v=4$ in tetrahedra.
 
-`tmesh` applies a small barycentric tolerance (minimum $10^{-8}$) near edges/faces for robustness.
+`project_inside` treats a point as interior only when all barycentric coordinates are strictly positive. Zero or negative coordinates are delegated to boundary-face projection, and linear interpolation uses the barycentric coordinates returned by the projection directly.
 
 ## Self-intersection detection
 
@@ -79,23 +79,25 @@ boxes overlap.
 
 ```rust
 # extern crate tmesh;
-use tmesh::Vert3d;
-use tmesh::mesh::{BoundaryMesh3d, Mesh, Triangle};
+use tmesh::Tag;
+use tmesh::mesh::{BoundaryMesh3d, Mesh};
 use tmesh::spatialindex::find_self_intersections;
 
 // First triangle in the plane z = 0.
-let verts = vec![
-	Vert3d::new(0.0, 0.0, 0.0),
-	Vert3d::new(1.0, 0.0, 0.0),
-	Vert3d::new(0.0, 1.0, 0.0),
+let verts = [
+   [0.0, 0.0, 0.0],
+   [1.0, 0.0, 0.0],
+   [0.0, 1.0, 0.0],
 	// Second triangle crossing the first one.
-	Vert3d::new(0.2, 0.2, -1.0),
-	Vert3d::new(0.2, 0.2, 1.0),
-	Vert3d::new(0.2, 0.5, 0.3),
+   [0.2, 0.2, -1.0],
+   [0.2, 0.2, 1.0],
+   [0.2, 0.5, 0.3],
 ];
-let elems = vec![Triangle::new(0, 1, 2), Triangle::new(3, 4, 5)];
-let etags = vec![1, 1];
+let elems = [[0, 1, 2], [3, 4, 5]];
+let etags = [1, 1];
+let faces: [[usize; 2]; 0] = [];
+let ftags: [Tag; 0] = [];
 
-let surface = BoundaryMesh3d::from_vecs(verts, elems, etags, vec![], vec![]);
+let surface = BoundaryMesh3d::from_slices(&verts, &elems, &etags, &faces, &ftags);
 assert_eq!(find_self_intersections(&surface), [(0, 1)]);
 ```

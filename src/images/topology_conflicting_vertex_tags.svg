@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="420" viewBox="0 0 900 420">
+  <defs>
+    <style>
+      .panel { fill: #f8fafc; stroke: #cbd5e1; stroke-width: 1.5; }
+      .tri { fill: #e2e8f0; fill-opacity: 0.5; stroke: #64748b; stroke-width: 1.4; }
+      .diag { stroke: #64748b; stroke-width: 2; stroke-dasharray: 6 5; }
+      .t1 { stroke: #0072ce; stroke-width: 6; stroke-linecap: round; }
+      .t2 { stroke: #dc2626; stroke-width: 6; stroke-linecap: round; }
+      .t3 { stroke: #16a34a; stroke-width: 6; stroke-linecap: round; }
+      .t4 { stroke: #9333ea; stroke-width: 6; stroke-linecap: round; }
+      .v { fill: #0f172a; }
+      .hot { fill: #dc2626; }
+      .title { font: 700 17px 'DejaVu Sans', sans-serif; fill: #0f172a; }
+      .label { font: 500 13px 'DejaVu Sans', sans-serif; fill: #334155; }
+      .small { font: 500 11px 'DejaVu Sans', sans-serif; fill: #475569; }
+      .tag { font: 600 13px 'DejaVu Sans', sans-serif; fill: #0f172a; }
+      .box { fill: #ffffff; stroke: #64748b; stroke-width: 1.5; rx: 7; }
+      .arrow { stroke: #64748b; stroke-width: 1.8; fill: none; marker-end: url(#a); }
+    </style>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#64748b"/>
+    </marker>
+  </defs>
+
+  <rect x="10" y="10" width="530" height="400" rx="10" class="panel"/>
+  <rect x="555" y="10" width="335" height="400" rx="10" class="panel"/>
+
+  <text x="30" y="40" class="title">Four distinct face tags at the corners</text>
+  <text x="575" y="40" class="title">Conflict at one vertex</text>
+
+  <polygon points="100,330 380,330 380,90 100,90" class="tri"/>
+  <polygon points="100,330 380,330 380,90" class="tri"/>
+  <polygon points="100,330 380,90 100,90" class="tri"/>
+  <line x1="100" y1="330" x2="380" y2="90" class="diag"/>
+
+  <line x1="100" y1="330" x2="380" y2="330" class="t1"/>
+  <line x1="380" y1="330" x2="380" y2="90" class="t2"/>
+  <line x1="380" y1="90" x2="100" y2="90" class="t3"/>
+  <line x1="100" y1="90" x2="100" y2="330" class="t4"/>
+
+  <circle cx="100" cy="330" r="5" class="v"/>
+  <circle cx="380" cy="330" r="8" class="hot"/>
+  <circle cx="380" cy="90" r="5" class="v"/>
+  <circle cx="100" cy="90" r="5" class="v"/>
+
+  <text x="240" y="350" class="label" text-anchor="middle">T_F = 1</text>
+  <text x="396" y="220" class="label" text-anchor="start">T_F = 2</text>
+  <text x="240" y="78" class="label" text-anchor="middle">T_F = 3</text>
+  <text x="84" y="220" class="label" text-anchor="end">T_F = 4</text>
+  <text x="240" y="220" class="small" text-anchor="middle">interior diagonal: untagged</text>
+  <text x="240" y="250" class="small" text-anchor="middle">both triangles: T_K = 1</text>
+  <text x="390" y="343" class="label">vertex 1</text>
+
+  <rect x="575" y="85" width="290" height="52" rx="7" class="box"/>
+  <text x="720" y="106" class="tag" text-anchor="middle">face tags (1, 1) and (1, 2)</text>
+  <text x="720" y="124" class="small" text-anchor="middle">same dimension, different tags</text>
+
+  <rect x="575" y="190" width="290" height="52" rx="7" class="box"/>
+  <text x="720" y="211" class="tag" text-anchor="middle">ambiguous vtag (1, 0)</text>
+  <text x="720" y="229" class="small" text-anchor="middle">temporary sentinel during construction</text>
+
+  <rect x="575" y="295" width="290" height="52" rx="7" class="box"/>
+  <text x="720" y="316" class="tag" text-anchor="middle">node tag (0, n)</text>
+  <text x="720" y="334" class="small" text-anchor="middle">resolved vertex tag</text>
+
+  <path d="M720 137 L720 182" class="arrow"/>
+  <path d="M720 242 L720 287" class="arrow"/>
+  <text x="575" y="380" class="label">One vertex cannot record two tags.</text>
+</svg>

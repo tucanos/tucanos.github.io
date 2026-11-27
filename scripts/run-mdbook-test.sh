@@ -3,6 +3,7 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 REMOTE_DIR="${REMOTE_DIR:-${ROOT_DIR}/../tucanos-remote-mdbook-test}"
+TUCANOS_REF="${TUCANOS_REF:-57208b2dc3c9943f8e2634d7613546c59484b592}"
 TOOLCHAIN="${RUSTUP_TOOLCHAIN:-1.99.1}"
 TMP_WORK_DIR="${TMPDIR:-${ROOT_DIR}/.tmp-rustdoc}"
 
@@ -10,6 +11,8 @@ if [[ ! -d "${REMOTE_DIR}/.git" ]]; then
   echo "Cloning remote tucanos repository into ${REMOTE_DIR}"
   git clone https://github.com/tucanos/tucanos "${REMOTE_DIR}"
 fi
+
+git -C "${REMOTE_DIR}" checkout --force --detach "${TUCANOS_REF}"
 
 echo "Building tmesh/tucanos with Rust ${TOOLCHAIN}"
 (

@@ -50,13 +50,19 @@ Finally, the simplex mesh $\mathcal{T}_h$ is said unit with respect to the metri
 
 ### Complexity
 
-We define the complexity $\mathcal{C}$ of metric field $(\mathcal{M}(\mathbf{x}))_{\mathbf{x}\in\Omega}$:
+Two related quantities are used. The theoretical metric volume is
 
-$$\mathcal{C}(\mathcal{M}(\cdot))=\int_{\Omega}\sqrt{\text{det}(\mathcal{M}(\mathbf{x}))}d\mathbf{x}$$
+$$\mathcal{V}(\mathcal{M}(\cdot))=\int_{\Omega}\sqrt{\det\mathcal{M}(\mathbf{x})}\,d\mathbf{x},$$
 
-This real value parameter is useful to quantify the global level of accuracy of $(\mathcal{M}(\mathbf{x}))_{\mathbf{x}\in\Omega}$. It can also be interpreted as the continuous counterpart of the number of vertices of a discrete mesh. There is a direct relationship between the prescribed metric complexity and the number of elements of the generated mesh. Let $\mathcal{T}_h$ be a simplex mesh of $\Omega\subset\mathbb{R}^n$ composed of simplex elements $K$. We can describe this mesh with the metric $\mathcal{M}(\mathbf{x})_{\mathbf{x}\in\Omega}$ in which $\mathcal{T}_h$ is unit. Then, the continuous mesh complexity and the mesh number of element $N_{elts}$ are linked using the unit element properties:
+while the complexity returned by the lib is normalized by the volume $v_\Delta$ of an ideal unit element:
 
-$$\mathcal{C} \approx \sum_{K} \sqrt{\text{det}\mathcal{M}} |K| \approx \sum_{K} \frac{\sqrt{n+1}}{2^{n/2}n!} = \frac{\sqrt{n+1}}{2^{n/2}n!} N_{elts}$$
+$$\mathcal{C}(\mathcal{M}(\cdot))=\frac{\mathcal{V}(\mathcal{M}(\cdot))}{v_\Delta}
+=\int_{\Omega}\frac{\sqrt{\det\mathcal{M}(\mathbf{x})}}{v_\Delta}\,d\mathbf{x},
+\qquad v_\Delta=\frac{1}{n!}\sqrt{\frac{n+1}{2^n}}.$$
+
+This real value quantifies the global level of accuracy of $(\mathcal{M}(\mathbf{x}))_{\mathbf{x}\in\Omega}$. It is the continuous counterpart of the number of elements of a discrete mesh. Let $\mathcal{T}_h$ be a simplex mesh of $\Omega\subset\mathbb{R}^n$ composed of simplex elements $K$. If the mesh is unit in the metric field, then
+
+$$\mathcal{C} \approx \sum_{K} \frac{\sqrt{\det\mathcal{M}}\,|K|}{v_\Delta} \approx \sum_{K} 1 = N_{elts}.$$
 
 After remeshing, this relation is not exact because most of the elements are not perfectly unit.
 
@@ -70,7 +76,7 @@ Conversely, from $\mathbf{M}=(\mathcal{M}(\mathbf{x}))_{\mathbf{x}\in\Omega}$ we
 
 $$\mathcal{N}(\mathbf{x})=\left(\frac{N}{\mathcal{C}(\mathbf{M})}\right)^{\frac{2}{n}}\mathcal{M}(\mathbf{x})$$
 
-In error-estimation settings, this notion enables convergence-order studies with respect to increasing complexity $N$. Consequently, complexity $\mathcal{C}(\mathbf{M})$ is also the continuous counterpart of the classical parameter $h$ used for uniform meshes.
+In error-estimation settings, this notion enables convergence-order studies with respect to increasing complexity $N$. For uniform meshes, the lib complexity behaves like a density: $h \sim \mathcal{C}^{-1/n}$.
 
 ![Different unit elements](images/Embedded_metric.png)
 
@@ -108,7 +114,7 @@ $$
 \mathcal{M}(\mathbf{x}) = d^{\frac{2}{n}}(\mathbf{x})\mathcal{R}(\mathbf{x})\begin{pmatrix} r_1^{-2}(\mathbf{x}) & & \\ & \ddots & \\ & & r_n^{-2}(\mathbf{x}) \end{pmatrix} \mathcal{R}^{\top}(\mathbf{x})
 $$
 
-This decomposition is used in the Hessian scaling technique described in the section on Hessian Scaling.
+This decomposition underlies the metric construction used for [Hessian-based adaptation](optimal_metric.md#hessian-computation).
 
 ### Geometric invariants for unit elements
 
@@ -147,14 +153,14 @@ $$l_{\mathcal{M}}(\mathbf{ab})=\int_0^1\sqrt{\mathbf{ab}^{\top}\mathcal{M}(\math
 
 where $\mathcal{M}(\mathbf{a}+\alpha_i\mathbf{ab})$ is the metric at the $i^{th}$ Gauss point. In the context of meshing, we are interested in the evaluation of edge length in the metric. This is a recurrent operation which could be time consuming for the mesh generator. Fortunately, this operation is at the edge level where the metric is known at the endpoints. The problem can thus be simplified by considering a variation law of the metric along the edge and computing analytically the edge length in the metric.
 
-Formally speaking, let $\mathbf{e}=\mathbf{p_1p_2}$ be an edge of the mesh of Euclidean length $||\mathbf{e}||_2$, and $\mathcal{M}(\mathbf{p_1})$ and $\mathcal{M}(\mathbf{p_2})$ be the metrics at the edge extremities $\mathbf{p_1}$ and $\mathbf{p_2}$. We denote by $l_i(\mathbf{e})=\sqrt{\mathbf{e}^{\top}\mathcal{M}(\mathbf{p_i})\mathbf{e}}$ the length of the edge in metric $\mathcal{M}(\mathbf{p}_i)$. We assume $l_1(\mathbf{e})>l_2(\mathbf{e})$ and we set $a=\frac{l_1(\mathbf{e})}{l_2(\mathbf{e})}$.
+Formally speaking, let $\mathbf{e}=\mathbf{p_1p_2}$ be an edge of the mesh of Euclidean length $||\mathbf{e}||_2$, and $\mathcal{M}(\mathbf{p_1})$ and $\mathcal{M}(\mathbf{p_2})$ be the metrics at the edge extremities $\mathbf{p_1}$ and $\mathbf{p_2}$. We denote by $l_0=\sqrt{\mathbf{e}^{\top}\mathcal{M}(\mathbf{p_1})\mathbf{e}}$ and $l_1=\sqrt{\mathbf{e}^{\top}\mathcal{M}(\mathbf{p_2})\mathbf{e}}$ the lengths of the edge at its endpoints, and set $r=l_0/l_1$. The formula is symmetric under endpoint reversal, so the larger length may be used as the numerator instead.
 
 
 
 Now, we consider the metric variation law associated with the interpolation operator on metrics. 
 ![log interpolation](images/log_interp.svg)
 
-Logarithmic interpolation is used to interpolate between metrics:
+For anisotropic tensors, logarithmic (log-Euclidean) interpolation is used to interpolate between metrics. Isotropic metrics instead interpolate their size $h$ linearly, so the formula below does not apply to them:
 $$ \mathcal M(t) = \exp\{(1 - t)  \log(\mathcal M_0) + t \log(\mathcal M_1)\}$$
 as it verifies a maximum principle, i.e. if $\det(\mathcal M_0) \le \det(\mathcal M_1)$ then $\det(\mathcal M_0) \le \det(\mathcal M(t)) \le \det(\mathcal M_1)$ for $0 \le t \le 1$
 
@@ -170,9 +176,12 @@ Linear interpolation between $\mathcal M_0$ and $\mathcal M_1$ is given by
 $$ \mathcal M(t) = (1 - t)  \mathcal M_0 + t \mathcal M_1$$
 and does not respect the maximum principle.
 
-As such, logarithmic interpolation is considered along the edge. It can be shown that it is equivalent to a geometric interpolation of the physical length prescribed by the metric [F. Alauzet](https://www.ljll.fr/~frey/papers/meshing/Alauzet%20F.,%20Size%20gradation%20control%20of%20anisotropic%20meshes.pdf), leading to the following Riemannian distance computation:
+As such, logarithmic interpolation is considered along the edge. It can be shown that it is equivalent to a geometric interpolation of the physical length prescribed by the metric [F. Alauzet](https://www.ljll.fr/~frey/papers/meshing/Alauzet%20F.,%20Size%20gradation%20control%20of%20anisotropic%20meshes.pdf), leading to the logarithmic mean of the endpoint lengths:
 
-$$l_{\mathcal{M}}(\mathbf{e})=l_1(\mathbf{e})\frac{a-1}{a\text{ln}(a)}$$
+$$l_{\mathcal{M}}(\mathbf{e})=l_0\,\frac{r-1}{r\ln r}=\frac{l_0-l_1}{\ln(l_0/l_1)}
+\quad (|r-1|>0.01).$$
+
+Near $r=1$, the lib uses the second-order expansion $\frac{l_0+l_1}{2}-\frac{(l_1-l_0)^2}{12\,(l_0+l_1)/2}$ to avoid cancellation.
 
 ### Numerical computation of volumes
 
