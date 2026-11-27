@@ -257,3 +257,22 @@ Implementation behavior:
 	- `dim == 0`: extend existing node parent edge-tag set with missing ghost edge tag(s), then create/find the merged node tag.
 
 These ghost tags do not add geometric entities; they add missing topological branches so parent/child relations and `parent(a,b)` queries remain consistent.
+
+### Viewing the topology graph 
+
+
+The topology hierarchy can be exported in two formats:
+
+- a `.dot` file (Graphviz format) using `Topology::to_dot`, which can be rendered with `dot`, for example `dot -Tsvg topo.dot -o topo.svg`;
+- an `.html` file using `Topology::to_html`, which provides an interactive graph view in a browser.
+
+In the interactive HTML view, selecting a node highlights its full ancestor and descendant sets, which makes it easier to inspect parent/child relations across dimensions.
+
+### Examples
+
+
+| Mesh | Topology graph |
+| --- | --- |
+| ![2D mesh example 1](images/mesh_2d_1.png) | ![2D topology graph example 1](images/topo_2d_1.svg) |
+| ![2D mesh example 2](images/mesh_2d_2.png) | ![2D topology graph example 2](images/topo_2d_2.svg) |
+| ![3D mesh example 1](images/mesh_3d_1.png) | ![3D topology graph example 1](images/topo_3d_1.svg) |
