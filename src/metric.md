@@ -81,10 +81,10 @@ For more details, see A. Loseille and F. Alauzet, *Continuous mesh framework. Pa
 
 ## Metric validity and construction
 
-`Metric::check()` verifies that a metric tensor stays in the range supported by the library.
+`Metric::check()` verifies that a metric tensor stays in the range supported by the lib. For isotropic metrics it only rejects negative sizes; the eigenvalue and anisotropy-ratio checks below apply to anisotropic metrics.
 
 > [!TIP]
-> **`Metric::check()` error messages**
+> **Anisotropic `Metric::check()` error messages**
 >
 > | Message | Meaning / action |
 > | --- | --- |
@@ -106,8 +106,8 @@ For more details, see A. Loseille and F. Alauzet, *Continuous mesh framework. Pa
 ## Element quality
 
 `Metric::quality(ge, metrics)` returns the metric quality of an element, normalized so
-that an equilateral element in metric space has quality $1$. The minimum metric over
-the element vertices is used.
+that an equilateral element in metric space has quality $1$. The metric with the
+smallest volume (largest density) over the element vertices is used.
 
 > [!TIP]
 > **`Metric::quality` messages**
@@ -115,7 +115,7 @@ the element vertices is used.
 > | Message | Meaning / action |
 > | --- | --- |
 > | `Dimension 0 elements are not supported` | Panic: quality is defined only for elements of dimension 1, 2, or 3. |
-> | `q = {q:.2e}, ge = {ge:?}, vol = {vol:.2e}` | Internal assertion that the computed quality lies in $[0, 1]$. A violation indicates a degenerate element/metric combination or an implementation bug. |
+> | `q = {q:.2e}, ge = {ge:?}, vol = {vol:.2e}` | Internal assertion that the computed quality lies in $[0, 1]$ up to a `1e-8` tolerance. A violation indicates a degenerate element/metric combination or an implementation bug. |
 >
 > Elements with a non-positive physical volume return `-1.0` instead of panicking.
 

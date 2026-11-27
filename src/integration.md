@@ -28,6 +28,11 @@ The element quadratures are:
 | `Edge` | 3-point Gauss | degree 5 |
 | `Triangle` | 3-point (midpoint subdivision) | degree 2 |
 | `Tetrahedron` | 4-point | degree 2 |
+| `QuadraticEdge` | 6-point Gauss | degree 11 |
+| `QuadraticTriangle` | 6-point triangle rule | degree 4 |
+| `QuadraticTetrahedron` | 10-point tetrahedron rule | degree 4 |
+
+Quadratic elements apply the rule on the reference element and include the Jacobian of the quadratic geometry map in the integrand.
 
 Because $f_h^2$ is a polynomial of degree 2 on each linear simplex, `norm` is **exact**
 for linear meshes. It is not exact for quadratic meshes, where the geometry map is

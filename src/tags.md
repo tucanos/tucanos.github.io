@@ -40,9 +40,8 @@ Face-tagging rules are enforced by `Mesh::check()`.
 
 ## Transferring tags
 
-`transfer_tags(src, dst)` transfers element tags when both meshes have the same dimension, or face tags when the destination has dimension `src_dim - 1`.
+`transfer_tags` projects the center of each target element onto the source mesh and copies the tag of the source element found there. In the Rust lib, `transfer_tags(src_mesh, tree, mesh)` takes the source mesh, an object index over it, and the target mesh. In `pytucanos`, `transfer_tags(msh_from, msh_to)` builds the index internally.
 
-> [!TIP]
-> **Tag transfer error**
->
-> Any other dimension combination panics with `Invalid mesh element dimension`. Transfer element tags between meshes of equal dimension, or transfer element tags to face tags from a mesh of dimension $d$ to one of dimension $d-1$.
+- When the element dimensions are equal, element tags are copied.
+- When the destination element dimension is `src_dim + 1`, face tags are copied, for example from `BoundaryMesh3d` to `Mesh3d`.
+- Other combinations are unsupported: the Rust function panics with `Invalid mesh element dimension`, while the Python wrapper raises `TypeError`.

@@ -4,7 +4,7 @@ A metric field can be defined on boundary patches to control geometric error ind
 
 - The curvature tensor is computed on a geometric model, giving principal directions $\mathbf{t_0}$ and $\mathbf{t_1}$ and associated curvature radii $r_0$ and $r_1$.
 - Along principal direction $\mathbf{t_i}$, target size is imposed as $h_i = r_i / r_h$, where $r_h$ is the curvature-radius-to-element-size ratio (typically $r_h \approx 4$).
-- Along the surface-normal direction $\mathbf n = \mathbf{t_0} \times \mathbf{t_1}$, the size $h_n$ can be chosen independently. If only curvature representation is targeted, a common choice is $h_n = \min(h_0, h_1)$ (this is the default when no normal size is supplied).
+- Along the surface-normal direction $\mathbf n = \mathbf{t_0} \times \mathbf{t_1}$, a supplied $h_n$ is an upper bound rather than an independent size: the lib starts from $\min(h_0,h_1)$, replaces it by $\min(h_n,\min(h_0,h_1))$ when a normal size is supplied, and then applies the $h_{\min}/h_{\max}$ bounds. When no normal size is supplied, $h_n = \min(h_0,h_1)$.
 
 This boundary metric is then extended into the volume with fixed [metric gradation](metric_operations.md#metric-gradation), as implemented in `tucanos/src/metric/field/curvature.rs`.
 

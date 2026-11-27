@@ -75,16 +75,16 @@ The reconstruction replaces the seed $e$ by $\mathbf v$ and re-creates the eleme
 
 | Mesh | Duplicate entity | Pinched entity |
 | --- | --- | --- |
-| volume ($d = D$, tetrahedra) | tagged face | edge shared by tagged faces (collapse only) |
-| surface ($d = D-1$, triangles) | element | edge shared by elements |
+| ambient dimension ($d = D$: tetrahedra in 3D, triangles in 2D) | tagged face | face of a tagged face shared by tagged faces (edge in 3D, vertex in 2D; collapse only) |
+| codimension one ($d = D-1$, triangles) | element | edge shared by elements |
 
-- **Duplicate entity.** In a surface mesh, the element $(\mathbf v,g)$ built from $\mathbf v$ and a boundary face $g$ is rejected if it is already incident to $\mathbf v$, which would create two identical triangles. In a volume mesh, the face $(\mathbf v,b)$ built from $\mathbf v$ and an edge $b$ of a tagged cavity boundary face is rejected if that sorted face already belongs to the tagged-face map, which would create two coincident tagged patches.
-- **Pinched edge, collapse.** Collapsing $j$ onto $i$ merges the edge $(j,k)$ into $(i,k)$ for every boundary vertex $k$. Counting, before the collapse, the tagged faces (volume) or elements (surface) that contain $(j,k)$, and after the collapse those that contain $(i,k)$ or $(j,k)$ but not both $i$ and $j$ (the latter belong to removed elements), the reconstruction is rejected when
+- **Duplicate entity.** In a codimension-one surface mesh, the element $(\mathbf v,g)$ built from $\mathbf v$ and a boundary face $g$ is rejected if it is already incident to $\mathbf v$, which would create two identical triangles. For ambient-dimension elements, the tagged face $(\mathbf v,b)$ built from $\mathbf v$ and a boundary entity $b$ of a tagged cavity face (an edge in 3D, a vertex in 2D) is rejected if that sorted face already belongs to the tagged-face map, which would create two coincident tagged patches.
+- **Pinched edge, collapse.** Collapsing $j$ onto $i$ merges the edge $(j,k)$ into $(i,k)$ for every boundary vertex $k$. Counting, before the collapse, the tagged faces (ambient dimension) or elements (codimension one) that contain $(j,k)$, and after the collapse those that contain $(i,k)$ or $(j,k)$ but not both $i$ and $j$ (the latter belong to removed elements), the reconstruction is rejected when
   $$ \mathrm{card}_{\text{after}} > \mathrm{card}_{\text{before}}. $$
   This prevents an edge from becoming incident to more tagged faces, or to more elements, than before the collapse.
 - **Pinched edge, swap.** Swapping the edge of a triangle cavity replaces it by an edge $(\mathbf v,k)$ for each cavity boundary vertex $k$. If $(\mathbf v,k)$ is already an edge of the mesh, the number of elements incident to it after the swap is the number of reconstructed elements that contain it plus the number of existing elements outside the cavity that contain it; the candidate is rejected when this sum exceeds two, since a surface edge may only be shared by two triangles. If $(\mathbf v,k)$ is not an existing edge, no pinch can occur and the test passes. In a volume mesh this test is not applied to swaps, because an interior edge is legitimately shared by any number of tetrahedra; only the duplicate tagged-face test remains.
 
-`check_topo` only handles duplication and pinching. Tag compatibility (which vertex may replace which entity, and which tags must be preserved) is checked by the operators before the cavity is built, using the topology hierarchy of [Locating an edge from tags](topology.md#locating-an-edge-from-tags).
+`check_topo` only handles duplication and pinching. Tag compatibility (which vertex may replace which entity, and which tags must be preserved) is checked by the operators while evaluating the cavity, using the topology hierarchy of [Locating an edge from tags](topology.md#locating-an-edge-from-tags). Split and swap initialize the cavity before rejecting a fixed edge tag; collapse checks the edge tag before building its cavity.
 
 > [!TIP]
 > **Cavity construction and topology check messages**
@@ -99,19 +99,19 @@ The reconstruction replaces the seed $e$ by $\mathbf v$ and re-creates the eleme
 
 ### Boundary normals
 
-A reconstruction that is valid in the metric can still create a boundary that deviates from the tagged geometry. `check_normals(topo, geom, max_angle)` compares the normal of each new boundary face with the normal of the tagged patch it belongs to, and rejects the reconstruction if the angle between them exceeds `max_angle` (in degrees):
+A reconstruction that is valid in the metric can still create a boundary that deviates from the tagged geometry. `check_normals(topo, geom, min_cos)` compares each new boundary face normal with the tagged patch normal through `Geometry::cos_angle` and rejects the reconstruction when the cosine drops below `min_cos`:
 
 - **surface mesh** ($d = D-1$): every reconstructed element is a new face of the surface; its center and normal are compared with the geometry normal at the tag of its boundary face,
-- **volume mesh** ($d = D$): only the faces of the reconstructed elements that lie on a tagged boundary are checked, i.e. the faces spanned by $\mathbf v$ and an edge of a tagged cavity boundary face. The orientation of the cavity boundary face is used to flip the normal when needed, so the comparison is always made with the outward normal of the new element on that patch.
+- **volume mesh** ($d = D$): only the faces of the reconstructed elements that lie on a tagged boundary are checked, i.e. the faces spanned by $\mathbf v$ and an edge of a tagged cavity boundary face. For triangle-element cavities, an orientation flag flips the normal for one cavity-face orientation; for tetrahedral volume cavities the flag is always false.
 
-The angle is computed as $\arccos(\mathbf n\cdot\mathbf n_{\text{ref}})$ in degrees, with both normals normalized, and is available from the geometry of [Meshed geometries](geometry.md#meshed-geometries). This is the same `max_angle` parameter for all four operators (default 25 degrees); it is checked after the topology and before the length/quality ranking in swap.
+The cosine is computed from normalized normals by the geometry of [Meshed geometries](geometry.md#meshed-geometries). Operators convert their `max_angle` parameter (default 25 degrees) to `min_cos = cos(max_angle)`, so no `arccos` is computed here. The check runs after the topology check and before the length/quality ranking in swap.
 
 > [!TIP]
 > **Boundary-normal check message**
 >
 > | Message | Meaning / action |
 > | --- | --- |
-> | `Invalid tag {}` | The volume branch of `check_normals` found a tagged cavity face with a non-positive tag. Negative tags mark fixed entities and must be rejected by the operator before the cavity is built; a zero tag is not a valid face tag. |
+> | `Invalid tag {}` | The ambient-dimension branch of `check_normals` found a tagged cavity face with a non-positive tag. `check_normals` requires positive face tags on reconstructed boundaries; split and swap reject negative edge tags while evaluating the cavity. |
 >
 > The call to the geometry can also raise the [`Invalid face tag`](geometry.md#meshed-geometries) error when no patch is registered for the tag of a new boundary face.
 

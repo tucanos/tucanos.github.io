@@ -42,7 +42,7 @@ $$
 
 where $n_v=3$ in triangles and $n_v=4$ in tetrahedra.
 
-`tmesh` applies a small barycentric tolerance (minimum $10^{-8}$) near edges/faces for robustness.
+`project_inside` treats a point as interior only when all barycentric coordinates are strictly positive. Zero or negative coordinates are delegated to boundary-face projection, and linear interpolation uses the barycentric coordinates returned by the projection directly.
 
 ## Self-intersection detection
 

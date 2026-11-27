@@ -17,7 +17,7 @@ A key requirement is commutativity: when interpolating multiple metrics, the res
 
 ### Log-Euclidean framework
 
-Following Arsigny et al. (2006), interpolation is performed in log-Euclidean coordinates.
+Following Arsigny et al. (2006), anisotropic tensors are interpolated in log-Euclidean coordinates. Isotropic metrics instead interpolate their size $h$ linearly.
 
 For a symmetric positive-definite metric tensor
 $$
@@ -72,7 +72,7 @@ $$
 \exp\!\left(\sum_{i=1}^k \alpha_i\,\log(\mathcal M(\mathbf x_i))\right).
 $$
 
-This interpolation is commutative and preserves a maximum-principle behavior on edge determinants: if
+For isotropic metrics, the same interpolation reduces to $h(\mathbf x)=\sum_i\alpha_i h(\mathbf x_i)$; it does not follow the log-Euclidean formula above. This interpolation is commutative and preserves a maximum-principle behavior on edge determinants: if
 $$
 \det\mathcal M(\mathbf a) \lt \det\mathcal M(\mathbf b),
 $$
@@ -98,27 +98,16 @@ For two tensors $\mathcal M_1$ and $\mathcal M_2$, the intersected tensor $\math
 
 ### Simultaneous reduction
 
-Define
+Let $\mathcal M_1$ and $\mathcal M_2$ be the two tensors to combine. Diagonalize the $\mathcal M_2$-normalized tensor
 $$
-\mathcal N := \mathcal M_1^{-1}\mathcal M_2.
+\mathcal N := \mathcal M_2^{-1/2}\mathcal M_1\mathcal M_2^{-1/2}
+= \mathcal P\,\operatorname{diag}(\lambda_1,\lambda_2,\lambda_3)\,\mathcal P^\top,
 $$
-
-Let $(\mathbf e_i)$ be eigenvectors of $\mathcal N$ and let
+where $\mathcal P$ is orthogonal, and define the $\mathcal M_2$-orthonormal vectors
 $$
-\mathcal P=(\mathbf e_1\;\mathbf e_2\;\mathbf e_3).
+\mathbf e_i = \mathcal M_2^{-1/2}\mathbf p_i,
 $$
-In this basis, both metrics are diagonal by congruence:
-$$
-\mathcal M_1
-=
-\mathcal P^{-\top}\operatorname{diag}(\lambda_1,\lambda_2,\lambda_3)\mathcal P^{-1},
-$$
-$$
-\mathcal M_2
-=
-\mathcal P^{-\top}\operatorname{diag}(\mu_1,\mu_2,\mu_3)\mathcal P^{-1},
-$$
-with Rayleigh coefficients
+with $\mathbf p_i$ the columns of $\mathcal P$. The Rayleigh coefficients of the two metrics in this basis are
 $$
 \lambda_i = \mathbf e_i^\top\mathcal M_1\mathbf e_i,
 \qquad
@@ -131,9 +120,9 @@ The intersection is
 $$
 \mathcal M_{1\cap2}
 =
-\mathcal P^{-\top}
+\mathcal M_2^{1/2}\,\mathcal P\,
 \operatorname{diag}\!\left(\max(\lambda_1,\mu_1),\max(\lambda_2,\mu_2),\max(\lambda_3,\mu_3)\right)
-\mathcal P^{-1}.
+\mathcal P^\top\,\mathcal M_2^{1/2}.
 $$
 
 Numerically in the lib, this is implemented through simultaneous reduction in `tucanos/src/metric/reduction.rs`.
@@ -175,16 +164,14 @@ A mixed law (Alauzet et al., 2021) blends both strategies with parameter $t\in[0
 In the lib, these formulas are used through metric spanning and edge-gradation control in `tucanos/src/metric/field/gradation.rs`.
 
 > [!TIP]
-> **Gradation warnings**
+> **Gradation and extension messages**
 >
 > Gradation is iterative and may stop before satisfying the target:
 >
 > | Message | Meaning / action |
 > | --- | --- |
-> | `gradation: target not achieved: max gradation: {c_max:.2}, {frac:.2e}% of edges have a gradation > {beta}` | The iteration limit was reached while some edges still exceed $\beta$. Increase `max_iter`, relax $\beta$, or smooth the input metric. |
-> | `stop at iteration {n}, {k} elements cannot be fixed` | Metric extension could not assign a metric to `k` vertices, usually because the fixed-metric set or connectivity is insufficient. |
->
-> Both are warnings; the function still returns the number of updated vertices.
+> | `gradation: target not achieved: max gradation: {c_max:.2}, {frac:.2e}% of edges have a gradation > {beta}` | Warning from `gradation()`: the iteration limit was reached while some edges still exceed $\beta$. Increase `max_iter`, relax $\beta$, or smooth the input metric. The function returns the number of updated vertices; stopping after zero updates does not emit this warning. |
+> | `stop at iteration {n}, {k} elements cannot be fixed` | Warning from `extend_from_boundary()`: metric extension could not assign a metric to `k` vertices, usually because the fixed-metric set or connectivity is insufficient. The function returns `Result<()>`. |
 
 ### Reduction operator
 
@@ -218,27 +205,27 @@ $$
 
 For an element $K$ with vertices $(\mathbf x_0,\dots,\mathbf x_d)$, the element-implied metric is the metric that makes $K$ equilateral in metric space.
 
-If $J_{K,\Delta}$ maps the reference equilateral element to the physical element, then
+Let $J_0$ map the reference unit simplex to the equilateral simplex and $J_g$ map the reference unit simplex to the physical element. Their composition $J = J_g J_0$ maps the reference simplex to $K$, and
 $$
-\mathcal M_K = (J_{K,\Delta}J_{K,\Delta}^\top)^{-1}.
+\mathcal M_K = (J J^\top)^{-1} = (J_g J_0 J_0^\top J_g^\top)^{-1}.
 $$
 
-This is exactly the formula used in `tucanos/src/metric/field/implied.rs`.
+This is the formula used in `tucanos/src/metric/field/implied.rs`.
 
 > [!TIP]
 > **Degenerate element**
 >
-> `MetricField::implied_metric(...)` inverts $(J_{K,\Delta}J_{K,\Delta}^\top)$ for every element and panics with `Degenerate element encountered` when that matrix is singular, i.e. for a zero-volume or flat element. Ensure every element has a positive measure before computing implied metrics.
+> `MetricField::implied_metric(...)` inverts $(J J^\top)$ for every element and panics with `Degenerate element encountered` when that matrix is singular, i.e. for a zero-volume or flat element. Ensure every element has a positive measure before computing implied metrics.
 
 ## Controlling the step between two metrics
 
-Given $\mathcal M_1$ (current metric), $\mathcal M_2$ (target metric), and a step bound $f\ge1$, define a controlled update that stays as close as possible to $\mathcal M_2$ while bounding directional change with respect to $\mathcal M_1$.
+Let $\mathcal L(\mathcal M_{\rm ref},\mathcal M_{\rm tgt},f)$ denote a controlled update that stays as close as possible to the target $\mathcal M_{\rm tgt}$ while bounding the directional change relative to the reference $\mathcal M_{\rm ref}$, with $f\ge1$.
 
 Constraint:
 $$
 \frac{1}{f}
 \le
-\sqrt{\frac{e^\top\mathcal M e}{e^\top\mathcal M_1 e}}
+\sqrt{\frac{e^\top\mathcal M e}{e^\top\mathcal M_{\rm ref} e}}
 \le
 f,
 \qquad\forall e\neq 0.
@@ -247,21 +234,21 @@ Equivalent spectral form:
 $$
 \frac{1}{f^2}
 \le
-\lambda_{\min}(\mathcal M_1^{-1/2}\mathcal M\mathcal M_1^{-1/2})
+\lambda_{\min}(\mathcal M_{\rm ref}^{-1/2}\mathcal M\mathcal M_{\rm ref}^{-1/2})
 \le
-\lambda_{\max}(\mathcal M_1^{-1/2}\mathcal M\mathcal M_1^{-1/2})
+\lambda_{\max}(\mathcal M_{\rm ref}^{-1/2}\mathcal M\mathcal M_{\rm ref}^{-1/2})
 \le
 f^2.
 $$
 
-With the $\mathcal M_1$-twisted Frobenius objective, the algorithm is:
-1. Compute $\mathcal N := \mathcal M_1^{-1/2}\mathcal M_2\mathcal M_1^{-1/2}$.
+With the $\mathcal M_{\rm ref}$-twisted Frobenius objective, the algorithm is:
+1. Compute $\mathcal N := \mathcal M_{\rm ref}^{-1/2}\mathcal M_{\rm tgt}\mathcal M_{\rm ref}^{-1/2}$.
 2. Diagonalize $\mathcal N = Q\operatorname{diag}(\lambda_i)Q^\top$.
 3. Clamp eigenvalues: $\widehat\lambda_i := \min(\max(\lambda_i,1/f^2),f^2)$.
 4. Recompose $\mathcal N^\ast := Q\operatorname{diag}(\widehat\lambda_i)Q^\top$.
-5. Map back $\mathcal M^\ast := \mathcal M_1^{1/2}\mathcal N^\ast\mathcal M_1^{1/2}$.
+5. Map back $\mathcal M^\ast := \mathcal M_{\rm ref}^{1/2}\mathcal N^\ast\mathcal M_{\rm ref}^{1/2}$.
 
-In the lib, this bounded-step construction is implemented in `tucanos/src/metric/reduction.rs`.
+In the lib, this bounded-step construction is implemented in `tucanos/src/metric/reduction.rs` and exposed as `control_step`.
 
 ![Representation of the controlled metric](images/step.svg)
 
@@ -283,10 +270,13 @@ the metric used by remeshing is
 $$
 \widetilde{\mathcal M}
 =
+\mathcal T\!\left(
 \mathcal L\!\left(
-\mathcal T(\alpha\mathcal M,h_{\min},h_{\max})\cap\mathcal M_f,
 \mathcal M_i,
- f
+\mathcal T(\alpha\mathcal M,h_{\min},h_{\max})\cap\mathcal M_f,
+f
+\right),
+h_{\min},h_{\max}
 \right).
 $$
 
@@ -294,7 +284,7 @@ The scalar $\alpha$ is chosen to reach a target complexity
 $$
 \mathcal C(\widetilde{\mathcal M}) = \mathcal N,
 $$
-usually by bisection.
+usually by bisection. Here $\mathcal C$ is the complexity returned by the lib, normalized by the volume of an ideal unit simplex so that it approximates the element count; see [Complexity](riemannian_metric.md#complexity).
 
 > [!TIP]
 > **Scaling and complexity error messages**

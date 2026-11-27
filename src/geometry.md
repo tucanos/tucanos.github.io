@@ -4,7 +4,7 @@ Relying on the mesh boundary alone to describe the geometry is often not suffici
 
 - validate topology compatibility (`check(topo)`),
 - project points onto geometric support (`project(pt, tag)`),
-- compare mesh normals to geometry normals (`angle(pt, n, tag)`).
+- compare mesh normals to geometry normals (`cos_angle(pt, n, tag)`).
 
 Projection and normal angle calculations are performed for a given tag, not just for nearest surface globally. This is how `tucanos` preserves sharp features and interfaces during adaptation, and this is why the mesh and the geometry must have consistent topology hierarchies.
 
@@ -25,16 +25,16 @@ This ensures that an edge/node in the adapted mesh is projected onto the correct
 > [!TIP]
 > **Geometry tag lookup errors**
 >
-> `MeshedGeometry::new(...)`, `set_topo_map(...)`, `project(...)`, and `angle(...)` panic when a tag cannot be resolved:
+> `project(...)` and `cos_angle(...)` require tags that can be resolved to a geometry patch or edge:
 >
 > | Message | Meaning / action |
 > | --- | --- |
-> | `Invalid face tag {tag:?}. Available tags are {:?}` | `project`/`angle` was called with a face tag that is not present in the `MeshedGeometry`. Build the geometry from the same tagged boundary and keep mesh/geometry face tags consistent. |
-> | `Invalid edge tag {tag:?}. Available tags are {:?}` | An edge tag could not be mapped to a geometry edge. Check that edge tags are inferred consistently and that `set_topo_map(...)` was called. |
+> | `Invalid face tag {tag:?}. Available tags are {:?}` | `project` or `cos_angle` was called with a face tag that is not present in the `MeshedGeometry`. Build the geometry from the same tagged boundary and keep mesh/geometry face tags consistent. |
+> | `Invalid edge tag {tag:?}. Available tags are {:?}` | After mapping a mesh edge tag to a geometry edge tag, no patch was found for it. Check that edge tags are inferred consistently and that `set_topo_map(...)` was called. |
 > | `Multiple edge tags with parents {parents:?}` | `set_topo_map` found more than one mesh edge tag for the same parent face-tag set. The mesh and geometry topologies are inconsistent. |
 > | `Geometry mesh empty for tag {tag}` | A face tag was found on the boundary mesh but selected no face when building its patch. |
 >
-> `check(topo)` does not re-validate these mappings (`MeshedGeometry` checks them when it is built); a panic therefore indicates inconsistent input tags or an incomplete topology map.
+> If `set_topo_map(...)` was never called, the edge map is empty and the mesh edge tag is used directly as the geometry edge tag. If the map exists but a mesh edge tag is absent from it, lookup panics before the custom `Invalid edge tag` message is reached. `MeshedGeometry::check(topo)` currently returns success without revalidating these mappings; construction checks patch completeness and `set_topo_map` checks uniqueness of parent sets.
 
 > [!TIP]
 > `MeshedGeometry` can be used with linear or quadratic meshes.
@@ -49,6 +49,8 @@ Curvature is precomputed patch-by-patch (for faces) when `MeshedGeometry` is bui
 Returned values follow the same convention as the curvature module:
 - in 2D curves: one vector `u`,
 - in 3D surfaces: two vectors `(u, v)`.
+
+For linear patches these vectors are stored per element. For quadratic 3D triangles they are computed per vertex, while the current nearest-element lookup still selects one stored entry; assume one curvature tensor per element when querying `curvature`.
 
 Each vector direction gives a principal direction and its norm gives the associated principal curvature magnitude (see [here](curvature.md))
 
@@ -97,7 +99,7 @@ Potential workflow:
 1. Import a STEP model and extract B-Rep entities (faces/edges/vertices).
 2. Build a CAD-geometry map from topological tags to one or more CAD patches.
 3. Implement `project(pt, tag)` by running nearest-point projection on the mapped CAD patch set.
-4. Implement `angle(pt, n, tag)` by evaluating CAD surface normals at projected points.
+4. Implement `cos_angle(pt, n, tag)` by evaluating CAD surface normals at projected points.
 
 This would make it possible to project directly on exact CAD surfaces instead of a triangle approximation.
 

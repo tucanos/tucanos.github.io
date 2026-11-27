@@ -135,6 +135,9 @@ writer.export("mesh.vtu").unwrap();
 > | --- | --- |
 > | `faces = {faces:?}` | Internal assertion while assembling a polygonal `PolyMesh`: the face loop did not merge into a single polygon. |
 > | `not yet implemented` | `PolyMeshType::Polylines` export is not implemented; convert the polyline mesh to polygons or write it another way. The same panic occurs for meshes with dimension other than 2 or 3, and for unsupported simplex orders/types. |
+> | `num_components must be greater than 0` | A `DataArray` was built with zero components per tuple. |
+> | `DataArray scalar count overflow` | The product of the number of components and tuples overflows `usize`. |
+> | `DataArray byte length overflow` | The scalar count times the scalar size overflows `usize`. |
 >
 > `export` returns the underlying `std::io::Result` for file creation and write
 > failures; the VTK writer itself does not return crate-level validation errors.

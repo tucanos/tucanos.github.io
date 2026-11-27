@@ -18,7 +18,7 @@ The `check` methods checks the validity criteria mentioned above as well as that
 	- number of element tags equals number of elements,
 	- number of face tags equals number of faces,
 - all element/face indices are in bounds,
-- boundary face orientation is valid when orientation is defined for the mesh type,
+- boundary faces have consistent topological orientation, and geometrically checkable linear faces point outward,
 - global volume consistency checks pass.
 
 > [!TIP]
@@ -33,7 +33,8 @@ The `check` methods checks the validity criteria mentioned above as well as that
 > | `Elem has a <0 volume` | An element has a negative signed measure. Reorient it, or call `fix()`. |
 > | `Invalid index in faces` | A face references a vertex index outside the vertex array. |
 > | `Face belong to no element` | A listed face is not a face of any element. |
-> | `Invalid face orientation: center = ..., normal = ..., face = ..., tag = ...` | A tagged boundary face is oriented inward. `fix()` reorients boundary faces. |
+> | `Invalid face orientation (topological): elem = ..., face = ..., tag = ...` | A tagged boundary face does not match any orientation of its adjacent element. `fix()` reorients boundary faces. |
+> | `Invalid face orientation (geometric): center = ..., normal = ..., face = ..., tag = ...` | A tagged boundary face is oriented inward. `fix()` reorients boundary faces. |
 > | `Invalid volume : {vol} from elements, {vol2} from boundary faces` | The volume computed from elements differs from the volume computed from boundary faces (linear, oriented meshes). Check boundary-face orientation and completeness. |
 >
 > Missing face tags are reported by `check()` with the messages listed in [Tags](tags.md#face-tagging-errors). `fix()` adds the missing boundary and interface tags before running these checks again.
@@ -65,7 +66,7 @@ The `check` methods checks the validity criteria mentioned above as well as that
 2. Build full face-to-element connectivity (`all_faces`).
 3. Add missing boundary face tags.
 4. Add missing internal-interface tags.
-5. Reorient boundary/interface faces consistently.
+5. Reorient boundary faces outward; internal-interface orientation is chosen when the interface tags are added in step 4.
 6. Run full validity checks.
 
 Return value:
@@ -182,6 +183,9 @@ msh.check()
 > | `At least a vertex of face {face:?} is not in the mesh` | `Remesher::new` panics when a tagged face references an unknown vertex. |
 > | `Tagged face not present` | `remove_tagged_face` was given a face that is not in the tagged-face list. |
 > | `Failed to remesh partition {i_part}.\n{error}` | `ParallelRemesher` wraps the failure of one partition; the inner message identifies the actual error. |
+> | `The number of partitions must be > 0` | The partitioner received no partitions. |
+> | `Invalid number of weights: {n} (expected {n_elems})` | One weight per element is required when weights are supplied. |
+> | `The weights must be finite and >= 0` | Partition weights must be nonnegative and finite. |
 > | `All the elements are in the interface` | Warning: after remeshing a partition, no face separates the elements tagged `1` from those tagged `2`, so no interface boundary tag is assigned. |
 >
 > `Remesher::new` also propagates `Geometry::check(topo)` and `insert_elem` errors, and asserts `metric.len() == mesh.n_verts()` and `topo.vtags().len() == mesh.n_verts()`.
